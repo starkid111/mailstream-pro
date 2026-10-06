@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
@@ -33,13 +33,19 @@ const ProtectedRoute = ({ children }) => {
 
 const AppLayout = ({ children }) => {
   const { isAuthenticated } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="app-container">
       <div className="main-content">
-        <Navbar />
-        <div style={{ display: 'flex', flex: 1, minHeight: 'calc(100vh - 64px)' }}>
-          {isAuthenticated && <Sidebar />}
+        <Navbar mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+        <div className="layout-body">
+          {isAuthenticated && (
+            <Sidebar
+              mobileMenuOpen={mobileMenuOpen}
+              onCloseMobileMenu={() => setMobileMenuOpen(false)}
+            />
+          )}
           <main className="page-wrapper" style={{ flex: 1 }}>
             {children}
           </main>

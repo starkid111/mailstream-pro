@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { Badge } from '../components/Badge';
-import { Send, Users, CheckCircle2, AlertTriangle, TrendingUp, Plus, ArrowRight } from 'lucide-react';
+import { Send, Users, CheckCircle2, TrendingUp, Plus, ArrowRight, XCircle } from 'lucide-react';
 
 export const DashboardPage = () => {
   const [summary, setSummary] = useState(null);
@@ -41,7 +41,7 @@ export const DashboardPage = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      {/* Top Header & Actions */}
+      {/* Top Header & Action Buttons */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '1.6rem', color: '#0f172a' }}>Dashboard Overview</h1>
@@ -49,7 +49,7 @@ export const DashboardPage = () => {
             Track campaign performance and deliverability in real-time
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <Link to="/recipients" className="btn btn-secondary btn-sm">
             <Plus size={16} /> Manage Recipients
           </Link>
@@ -59,8 +59,8 @@ export const DashboardPage = () => {
         </div>
       </div>
 
-      {/* Summary Stat Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+      {/* Summary Performance Stat Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
         <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600' }}>Total Campaigns</span>
@@ -68,7 +68,9 @@ export const DashboardPage = () => {
               <Send size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '1.85rem', fontWeight: '800', marginTop: '0.75rem', color: '#0f172a' }}>{summary?.totalCampaigns || 0}</div>
+          <div style={{ fontSize: '1.85rem', fontWeight: '800', marginTop: '0.75rem', color: '#0f172a' }}>
+            {summary?.totalCampaigns || 0}
+          </div>
         </div>
 
         <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -78,7 +80,9 @@ export const DashboardPage = () => {
               <Users size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '1.85rem', fontWeight: '800', marginTop: '0.75rem', color: '#0f172a' }}>{summary?.totalRecipients || 0}</div>
+          <div style={{ fontSize: '1.85rem', fontWeight: '800', marginTop: '0.75rem', color: '#0f172a' }}>
+            {summary?.totalRecipients || 0}
+          </div>
         </div>
 
         <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -106,9 +110,9 @@ export const DashboardPage = () => {
         </div>
       </div>
 
-      {/* Recent Campaigns Section */}
+      {/* Recent Campaigns Deliverability Table */}
       <div className="glass-panel" style={{ padding: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <h3 style={{ color: '#0f172a' }}>Recent Campaigns</h3>
           <Link to="/campaigns" style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: '600', color: '#00925d' }}>
             View All Campaigns <ArrowRight size={14} />

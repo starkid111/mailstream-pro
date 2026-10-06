@@ -162,7 +162,7 @@ h1, h2, h3, h4, h5, h6 {
   cursor: not-allowed;
 }
 
-/* Forms & Inputs - MailStream Pro Clean Input Styling */
+/* Forms & Inputs */
 .form-group {
   margin-bottom: 1.25rem;
   display: flex;
@@ -227,6 +227,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   background: #ffffff;
+  -webkit-overflow-scrolling: touch;
 }
 
 .custom-table {
@@ -272,6 +273,8 @@ h1, h2, h3, h4, h5, h6 {
   border-top: 1px solid var(--border-color);
   font-size: 0.85rem;
   color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 /* Modal */
@@ -293,6 +296,8 @@ h1, h2, h3, h4, h5, h6 {
 .modal-content {
   width: 100%;
   max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
   background: #ffffff;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -353,11 +358,126 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--bg-primary);
 }
 
+.layout-body {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 64px);
+  position: relative;
+}
+
 .page-wrapper {
   padding: 2rem;
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
+}
+
+/* Sidebar Styles */
+.app-sidebar {
+  width: 240px;
+  border-right: 1px solid var(--border-color);
+  background: #ffffff;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 90;
+}
+
+/* Mobile Sidebar Overlay */
+.sidebar-overlay {
+  display: none;
+}
+
+/* Mobile Hamburger Toggle */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  color: var(--text-main);
+  padding: 0.45rem;
+  border-radius: var(--radius-sm);
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.mobile-menu-toggle:hover {
+  background: #f1f5f9;
+}
+
+.desktop-user-pill {
+  display: flex;
+}
+
+/* Global Mobile Media Queries */
+@media (max-width: 768px) {
+  .desktop-user-pill {
+    display: none !important;
+  }
+
+  .page-wrapper {
+    padding: 1.25rem 1rem;
+  }
+
+  .mobile-menu-toggle {
+    display: inline-flex;
+  }
+
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+    transform: translateX(-100%);
+  }
+
+  .app-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay.mobile-open {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 85;
+    animation: fadeIn 0.15s ease-out;
+  }
+
+  .glass-panel, .glass-card {
+    padding: 1rem;
+  }
+
+  /* Responsive Tables */
+  .custom-table th, .custom-table td {
+    padding: 0.65rem 0.85rem;
+    white-space: nowrap;
+  }
+
+  .modal-content {
+    padding: 1.25rem;
+    max-width: 95vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-wrapper {
+    padding: 1rem 0.75rem;
+  }
+
+  .user-badge-name {
+    display: none;
+  }
 }
 
 /* Spinner */
