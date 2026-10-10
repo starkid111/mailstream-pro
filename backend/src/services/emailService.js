@@ -2,97 +2,141 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const nodemailer = require('nodemailer');
 
+const sendViaBrevoApi = async ({ toName, toEmail, subject, htmlContent }) => {
+  const brevoApiKey = (process.env.BREVO_API_KEY || '').trim();
+  const fromName = process.env.FROM_NAME || 'MailStream Pro';
+  const fromEmail = process.env.FROM_EMAIL || process.env.SMTP_USER || 'campaigns@mailstream.io';
+
+  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'accept': 'application/json',
+      'api-key': brevoApiKey,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      sender: { name: fromName, email: fromEmail },
+      to: [{ email: toEmail, name: toName || '' }],
+      subject,
+      htmlContent,
+    }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.message || `Brevo API error status ${response.status}`);
+  }
+  return data.messageId || `msg_brevo_${Date.now()}`;
+};
+
 const getNodemailerTransporter = async () => {
+  const brevoKey = (process.env.BREVO_API_KEY || process.env.BREVO_SMTP_KEY || '').trim();
+
+  if (brevoKey && brevoKey.startsWith('xsmtpsib-')) {
+    const brevoUser = process.env.BREVO_USER || process.env.SMTP_USER || process.env.FROM_EMAIL;
+    return nodemailer.createTransport({
+      host: 'smtp-relay.brevo.com',
+      port: parseInt(process.env.SMTP_PORT, 10) || 587,
+      secure: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465',
+      auth: { user: brevoUser, pass: brevoKey },
+      pool: false,
+      connectionTimeout: 12000,
+      tls: { rejectUnauthorized: false },
+    });
+  }
+
   const host = process.env.SMTP_HOST || 'smtp.gmail.com';
   const user = process.env.SMTP_USER;
   const rawPass = process.env.SMTP_PASS || '';
   const pass = rawPass.trim().replace(/\s+/g, '');
-  const port = parseInt(process.env.SMTP_PORT, 10) || 465;
-  const secure = process.env.SMTP_SECURE === 'true' || port === 465;
+  const preferredPort = parseInt(process.env.SMTP_PORT, 10) || 587;
+  const preferredSecure = process.env.SMTP_SECURE === 'true' || preferredPort === 465;
 
   if (user && pass && user !== 'mock_user') {
-    // Disable socket pooling (pool: false) to prevent stale container socket hangs on Render/cloud hosts
     return nodemailer.createTransport({
       host,
-      port,
-      secure,
+      port: preferredPort,
+      secure: preferredSecure,
       auth: { user, pass },
       pool: false,
       connectionTimeout: 12000,
-      greetingTimeout: 8000,
-      socketTimeout: 15000,
       tls: { rejectUnauthorized: false },
     });
-  } else {
-    console.log('[Email Service Notice] Generating automatic Ethereal test account...');
-    const testAccount = await nodemailer.createTestAccount();
-    return nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass,
-      },
-    });
   }
+
+  const testAccount = await nodemailer.createTestAccount();
+  return nodemailer.createTransport({
+    host: 'smtp.ethereal.email',
+    port: 587,
+    secure: false,
+    auth: { user: testAccount.user, pass: testAccount.pass },
+  });
 };
 
-
-/**
- * Send campaign emails via Nodemailer (SMTP)
- * @param {Object} campaign 
- * @param {Array} recipients 
- * @returns {Array} sendResults
- */
 const sendCampaignEmails = async (campaign, recipients) => {
   const sendResults = [];
   const fromName = process.env.FROM_NAME || 'MailStream Pro';
   const fromAddress = process.env.FROM_EMAIL || process.env.SMTP_USER || 'campaigns@mailstream.io';
+  const brevoApiKey = (process.env.BREVO_API_KEY || '').trim();
+  const isBrevoHttpApi = brevoApiKey.startsWith('xkeysib-');
 
-  const transporter = await getNodemailerTransporter();
+  let transporter = null;
+  if (!isBrevoHttpApi) {
+    transporter = await getNodemailerTransporter();
+  }
 
   for (let i = 0; i < recipients.length; i++) {
     const recipient = recipients[i];
     const defaultMsgId = `msg_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
+    const htmlContent = `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; color: #0f172a;">
+        <div style="background-color: #00925d; padding: 20px 24px;">
+          <span style="font-size: 20px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">MailStream Pro</span>
+        </div>
+        <div style="padding: 28px 24px;">
+          <h1 style="color: #0f172a; margin: 0 0 16px 0; font-size: 20px; font-weight: 700; line-height: 1.3;">${campaign.subject}</h1>
+          <div style="line-height: 1.7; font-size: 15px; color: #334155; white-space: pre-wrap;">${campaign.content}</div>
+        </div>
+        <div style="background-color: #f8fafc; padding: 16px 24px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; display: flex; justify-content: space-between; align-items: center;">
+          <span>Sent to: <strong>${recipient.firstName || ''} ${recipient.lastName || ''}</strong> (${recipient.email})</span>
+          <span style="font-weight: 600; color: #00925d;">Powered by MailStream Pro</span>
+        </div>
+      </div>
+    `;
+
     try {
-      console.log(`[SMTP Dispatch] Sending campaign email to ${recipient.email}...`);
+      let messageId = defaultMsgId;
+      let previewUrl = null;
 
-      const info = await transporter.sendMail({
-        from: `"${fromName}" <${fromAddress}>`,
-        to: `"${recipient.firstName || ''} ${recipient.lastName || ''}" <${recipient.email}>`,
-        subject: campaign.subject,
-        html: `
-          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; color: #0f172a;">
-            <div style="background-color: #00925d; padding: 20px 24px;">
-              <span style="font-size: 20px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">MailStream Pro</span>
-            </div>
-            <div style="padding: 28px 24px;">
-              <h1 style="color: #0f172a; margin: 0 0 16px 0; font-size: 20px; font-weight: 700; line-height: 1.3;">${campaign.subject}</h1>
-              <div style="line-height: 1.7; font-size: 15px; color: #334155; white-space: pre-wrap;">${campaign.content}</div>
-            </div>
-            <div style="background-color: #f8fafc; padding: 16px 24px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; display: flex; justify-content: space-between; align-items: center;">
-              <span>Sent to: <strong>${recipient.firstName || ''} ${recipient.lastName || ''}</strong> (${recipient.email})</span>
-              <span style="font-weight: 600; color: #00925d;">Powered by MailStream Pro</span>
-            </div>
-          </div>
-        `,
-      });
-
-      const previewUrl = nodemailer.getTestMessageUrl(info) || null;
-      console.log(`[SMTP Success] Delivered to ${recipient.email} | MsgId: ${info.messageId}`);
+      if (isBrevoHttpApi) {
+        messageId = await sendViaBrevoApi({
+          toName: `${recipient.firstName || ''} ${recipient.lastName || ''}`.trim(),
+          toEmail: recipient.email,
+          subject: campaign.subject,
+          htmlContent,
+        });
+      } else {
+        const info = await transporter.sendMail({
+          from: `"${fromName}" <${fromAddress}>`,
+          to: `"${recipient.firstName || ''} ${recipient.lastName || ''}" <${recipient.email}>`,
+          subject: campaign.subject,
+          html: htmlContent,
+        });
+        messageId = info.messageId || defaultMsgId;
+        previewUrl = nodemailer.getTestMessageUrl(info) || null;
+      }
 
       sendResults.push({
         recipientId: recipient._id,
         email: recipient.email,
         status: 'SENT',
-        providerMessageId: info.messageId || defaultMsgId,
+        providerMessageId: messageId,
         previewUrl,
         sentAt: new Date(),
       });
     } catch (error) {
-      const errorDetail = error.message || 'SMTP delivery failed';
+      const errorDetail = error.message || 'Email delivery failed';
       console.error(`[Email Send Error] Recipient: ${recipient.email} - ${errorDetail}`);
       sendResults.push({
         recipientId: recipient._id,
@@ -109,17 +153,15 @@ const sendCampaignEmails = async (campaign, recipients) => {
   return sendResults;
 };
 
-/**
- * Send welcome email to newly registered user
- * @param {Object} user - { name, email }
- */
 const sendWelcomeEmail = async (user) => {
   const fromName = process.env.FROM_NAME || 'MailStream Pro';
   const fromAddress = process.env.FROM_EMAIL || process.env.SMTP_USER || 'campaigns@mailstream.io';
   const firstName = user.name ? user.name.split(' ')[0] : 'there';
   const subject = `Hi ${firstName}, welcome to MailStream Pro! 🎉`;
+  const brevoApiKey = (process.env.BREVO_API_KEY || '').trim();
+  const isBrevoHttpApi = brevoApiKey.startsWith('xkeysib-');
 
-  const html = `
+  const htmlContent = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; color: #0f172a;">
       <div style="background-color: #00925d; padding: 24px; text-align: center;">
         <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">MailStream Pro</h1>
@@ -149,30 +191,30 @@ const sendWelcomeEmail = async (user) => {
   `;
 
   try {
-    const transporter = await getNodemailerTransporter();
-    console.log(`[Welcome Email SMTP] Dispatching welcome email to ${user.email}...`);
-    await transporter.sendMail({
-      from: `"${fromName}" <${fromAddress}>`,
-      to: `"${user.name}" <${user.email}>`,
-      subject,
-      html,
-    });
-    console.log(`[Welcome Email Success] Welcome email successfully sent to ${user.email}`);
+    if (isBrevoHttpApi) {
+      await sendViaBrevoApi({ toName: user.name, toEmail: user.email, subject, htmlContent });
+    } else {
+      const transporter = await getNodemailerTransporter();
+      await transporter.sendMail({
+        from: `"${fromName}" <${fromAddress}>`,
+        to: `"${user.name}" <${user.email}>`,
+        subject,
+        html: htmlContent,
+      });
+    }
   } catch (err) {
     console.error(`[Welcome Email Error] Failed to send welcome email to ${user.email}:`, err.message);
   }
 };
 
-/**
- * Send password reset email with 6-digit code
- * @param {Object} data - { name, email, code }
- */
 const sendPasswordResetEmail = async ({ name, email, code }) => {
   const fromName = process.env.FROM_NAME || 'MailStream Pro';
   const fromAddress = process.env.FROM_EMAIL || process.env.SMTP_USER || 'campaigns@mailstream.io';
   const subject = `Your Password Reset Code: ${code}`;
+  const brevoApiKey = (process.env.BREVO_API_KEY || '').trim();
+  const isBrevoHttpApi = brevoApiKey.startsWith('xkeysib-');
 
-  const html = `
+  const htmlContent = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; color: #0f172a;">
       <div style="background-color: #00925d; padding: 24px; text-align: center;">
         <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">MailStream Pro</h1>
@@ -197,15 +239,17 @@ const sendPasswordResetEmail = async ({ name, email, code }) => {
   `;
 
   try {
-    const transporter = await getNodemailerTransporter();
-    console.log(`[Reset Email SMTP] Dispatching password reset email to ${email}...`);
-    await transporter.sendMail({
-      from: `"${fromName}" <${fromAddress}>`,
-      to: `"${name || 'User'}" <${email}>`,
-      subject,
-      html,
-    });
-    console.log(`[Reset Email Success] Password reset code sent to ${email}`);
+    if (isBrevoHttpApi) {
+      await sendViaBrevoApi({ toName: name, toEmail: email, subject, htmlContent });
+    } else {
+      const transporter = await getNodemailerTransporter();
+      await transporter.sendMail({
+        from: `"${fromName}" <${fromAddress}>`,
+        to: `"${name || 'User'}" <${email}>`,
+        subject,
+        html: htmlContent,
+      });
+    }
   } catch (err) {
     console.error(`[Reset Email Error] Failed to send reset code to ${email}:`, err.message);
     throw err;
@@ -217,4 +261,3 @@ module.exports = {
   sendWelcomeEmail,
   sendPasswordResetEmail,
 };
-
