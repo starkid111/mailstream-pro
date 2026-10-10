@@ -104,13 +104,13 @@ export const RecipientsPage = () => {
       {/* Header Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.8rem' }}>Recipient List</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-            Manage saved contacts for your email campaigns
+          <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#0f172a' }}>Recipients</h1>
+          <p style={{ color: '#64748b', fontSize: '0.88rem' }}>
+            Manage saved contacts for your email campaigns.
           </p>
         </div>
-        <button className="btn btn-primary" onClick={handleOpenAddModal}>
-          <Plus size={18} /> Add Recipient
+        <button className="btn btn-primary btn-sm" onClick={handleOpenAddModal}>
+          <Plus size={16} /> Add Recipient
         </button>
       </div>
 

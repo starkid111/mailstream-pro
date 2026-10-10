@@ -44,67 +44,47 @@ export const DashboardPage = () => {
       {/* Top Header & Action Buttons */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.6rem', color: '#0f172a' }}>Dashboard Overview</h1>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#0f172a' }}>Dashboard</h1>
           <p style={{ color: '#64748b', fontSize: '0.88rem' }}>
-            Track campaign performance and deliverability in real-time
+            Overview of your campaigns, recipients, and deliverability.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
           <Link to="/recipients" className="btn btn-secondary btn-sm">
-            <Plus size={16} /> Manage Recipients
+            <Plus size={15} /> Manage Recipients
           </Link>
           <Link to="/campaigns/new" className="btn btn-primary btn-sm">
-            <Plus size={16} /> Create Campaign
+            <Plus size={15} /> Create Campaign
           </Link>
         </div>
       </div>
 
       {/* Summary Performance Stat Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600' }}>Total Campaigns</span>
-            <div style={{ padding: '0.5rem', borderRadius: '8px', background: '#e0f2fe', color: '#0284c7' }}>
-              <Send size={18} />
-            </div>
-          </div>
-          <div style={{ fontSize: '1.85rem', fontWeight: '800', marginTop: '0.75rem', color: '#0f172a' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '1rem' }}>
+        <div className="glass-card" style={{ padding: '1.25rem' }}>
+          <div style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: '600' }}>Total Campaigns</div>
+          <div style={{ fontSize: '1.75rem', fontWeight: '800', marginTop: '0.4rem', color: '#0f172a', letterSpacing: '-0.03em' }}>
             {summary?.totalCampaigns || 0}
           </div>
         </div>
 
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600' }}>Saved Recipients</span>
-            <div style={{ padding: '0.5rem', borderRadius: '8px', background: '#f0fdf4', color: '#00925d' }}>
-              <Users size={18} />
-            </div>
-          </div>
-          <div style={{ fontSize: '1.85rem', fontWeight: '800', marginTop: '0.75rem', color: '#0f172a' }}>
+        <div className="glass-card" style={{ padding: '1.25rem' }}>
+          <div style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: '600' }}>Saved Recipients</div>
+          <div style={{ fontSize: '1.75rem', fontWeight: '800', marginTop: '0.4rem', color: '#0f172a', letterSpacing: '-0.03em' }}>
             {summary?.totalRecipients || 0}
           </div>
         </div>
 
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600' }}>Total Delivered</span>
-            <div style={{ padding: '0.5rem', borderRadius: '8px', background: '#e6f4ea', color: '#007a4e' }}>
-              <CheckCircle2 size={18} />
-            </div>
-          </div>
-          <div style={{ fontSize: '1.85rem', fontWeight: '800', marginTop: '0.75rem', color: '#007a4e' }}>
+        <div className="glass-card" style={{ padding: '1.25rem' }}>
+          <div style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: '600' }}>Total Delivered</div>
+          <div style={{ fontSize: '1.75rem', fontWeight: '800', marginTop: '0.4rem', color: '#00925d', letterSpacing: '-0.03em' }}>
             {summary?.totalDelivered || 0}
           </div>
         </div>
 
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '600' }}>Overall Success Rate</span>
-            <div style={{ padding: '0.5rem', borderRadius: '8px', background: '#f3e8ff', color: '#9333ea' }}>
-              <TrendingUp size={18} />
-            </div>
-          </div>
-          <div style={{ fontSize: '1.85rem', fontWeight: '800', marginTop: '0.75rem', color: '#9333ea' }}>
+        <div className="glass-card" style={{ padding: '1.25rem' }}>
+          <div style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: '600' }}>Overall Success Rate</div>
+          <div style={{ fontSize: '1.75rem', fontWeight: '800', marginTop: '0.4rem', color: '#0f172a', letterSpacing: '-0.03em' }}>
             {summary?.deliveryRate || 0}%
           </div>
         </div>

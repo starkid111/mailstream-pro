@@ -54,13 +54,13 @@ export const CampaignsPage = () => {
       {/* Header Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.8rem' }}>Email Campaigns</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-            View, create, target, and manage your email campaigns
+          <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#0f172a' }}>Campaigns</h1>
+          <p style={{ color: '#64748b', fontSize: '0.88rem' }}>
+            Manage and monitor your email campaign broadcasts.
           </p>
         </div>
-        <Link to="/campaigns/new" className="btn btn-primary">
-          <Plus size={18} /> Create Campaign
+        <Link to="/campaigns/new" className="btn btn-primary btn-sm">
+          <Plus size={16} /> Create Campaign
         </Link>
       </div>
 

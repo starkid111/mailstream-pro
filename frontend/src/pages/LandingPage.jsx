@@ -44,48 +44,30 @@ export const LandingPage = () => {
   ];
 
   return (
-    <div style={{ padding: '2.5rem 1.5rem 4rem 1.5rem', maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="landing-container">
       {/* 1. Split Hero Section */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '3.5rem',
-          alignItems: 'center',
-          margin: '1rem 0 4rem 0',
-        }}
-      >
+      <div className="landing-hero-grid">
         {/* Left Column: Copy & Actions */}
         <div>
-
-          <h1
-            style={{
-              fontSize: '3.1rem',
-              lineHeight: 1.15,
-              marginBottom: '1.25rem',
-              fontWeight: '800',
-              color: '#0f172a',
-              letterSpacing: '-0.03em',
-            }}
-          >
+          <h1 className="landing-hero-title">
             Send email campaigns that <span style={{ color: '#00925d' }}>reach the inbox</span>
           </h1>
-          <p style={{ fontSize: '1.1rem', color: '#475569', lineHeight: '1.6', marginBottom: '2rem' }}>
+          <p className="landing-hero-subtitle">
             MailStream Pro makes it simple to manage contacts, compose targeted email campaigns, and monitor delivery status live in real time.
           </p>
 
           {/* Action Buttons */}
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
+          <div className="landing-hero-actions">
             {isAuthenticated ? (
-              <Link to="/dashboard" className="btn btn-primary" style={{ padding: '0.85rem 2rem', fontSize: '1rem' }}>
+              <Link to="/dashboard" className="btn btn-primary landing-btn-hero">
                 Go to Dashboard <ArrowRight size={18} />
               </Link>
             ) : (
               <>
-                <Link to="/register" className="btn btn-primary" style={{ padding: '0.85rem 2rem', fontSize: '1rem' }}>
+                <Link to="/register" className="btn btn-primary landing-btn-hero">
                   Get Started Free <ArrowRight size={18} />
                 </Link>
-                <Link to="/login" className="btn btn-secondary" style={{ padding: '0.85rem 2rem', fontSize: '1rem' }}>
+                <Link to="/login" className="btn btn-secondary landing-btn-hero">
                   Sign In
                 </Link>
               </>
@@ -119,7 +101,7 @@ export const LandingPage = () => {
               <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444' }} />
               <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b' }} />
               <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981' }} />
-              <span style={{ color: '#94a3b8', fontSize: '0.8rem', marginLeft: '0.5rem', fontFamily: 'monospace' }}>
+              <span style={{ color: '#94a3b8', fontSize: '0.8rem', marginLeft: '0.5rem', fontFamily: 'monospace', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 mailstream-pro.app / campaign-analytics
               </span>
             </div>
@@ -176,48 +158,28 @@ export const LandingPage = () => {
         </div>
       </div>
 
-      {/* 2. Key Performance Metric Strip (Replaces AI cards) */}
-      <div
-        style={{
-          background: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: '12px',
-          padding: '2rem 1.5rem',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '2rem',
-          margin: '0 0 5rem 0',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.03)',
-        }}
-      >
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '2.2rem', fontWeight: '800', color: '#00925d', letterSpacing: '-0.02em' }}>99.8%</div>
+      {/* 2. Key Performance Metric Strip */}
+      <div className="landing-metrics-strip">
+        <div className="landing-metric-item">
+          <div style={{ fontSize: '2rem', fontWeight: '800', color: '#00925d', letterSpacing: '-0.02em' }}>99.8%</div>
           <div style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: '600', marginTop: '0.2rem' }}>Inbox Delivery Rate</div>
         </div>
-        <div style={{ textAlign: 'center', borderLeft: '1px solid #f1f5f9' }}>
-          <div style={{ fontSize: '2.2rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em' }}>&lt; 1.2s</div>
+        <div className="landing-metric-item">
+          <div style={{ fontSize: '2rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em' }}>&lt; 1.2s</div>
           <div style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: '600', marginTop: '0.2rem' }}>Avg Dispatch Latency</div>
         </div>
-        <div style={{ textAlign: 'center', borderLeft: '1px solid #f1f5f9' }}>
-          <div style={{ fontSize: '2.2rem', fontWeight: '800', color: '#00925d', letterSpacing: '-0.02em' }}>Real-time</div>
+        <div className="landing-metric-item">
+          <div style={{ fontSize: '2rem', fontWeight: '800', color: '#00925d', letterSpacing: '-0.02em' }}>Real-time</div>
           <div style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: '600', marginTop: '0.2rem' }}>Live Delivery Polling</div>
         </div>
-        <div style={{ textAlign: 'center', borderLeft: '1px solid #f1f5f9' }}>
-          <div style={{ fontSize: '2.2rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em' }}>100%</div>
+        <div className="landing-metric-item">
+          <div style={{ fontSize: '2rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em' }}>100%</div>
           <div style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: '600', marginTop: '0.2rem' }}>Data Privacy Isolation</div>
         </div>
       </div>
 
       {/* 3. Deep-Dive Feature 1: Real-Time Live Delivery Intelligence */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '3.5rem',
-          alignItems: 'center',
-          marginBottom: '6rem',
-        }}
-      >
+      <div className="landing-feature-grid">
         <div>
           <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#00925d', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.6rem' }}>
             REAL-TIME MONITORING
@@ -291,16 +253,8 @@ export const LandingPage = () => {
         </div>
       </div>
 
-      {/* 4. Deep-Dive Feature 2: Contact & Audience Management (Flipped Layout) */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '3.5rem',
-          alignItems: 'center',
-          marginBottom: '6rem',
-        }}
-      >
+      {/* 4. Deep-Dive Feature 2: Contact & Audience Management */}
+      <div className="landing-feature-grid">
         {/* Left Visual Card */}
         <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.75rem', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.04)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '1.25rem' }}>
@@ -497,3 +451,4 @@ export const LandingPage = () => {
     </div>
   );
 };
+

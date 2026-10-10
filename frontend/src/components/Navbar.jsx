@@ -92,7 +92,7 @@ export const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
             </button>
           </>
         ) : (
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className="nav-public-actions">
             <Link to="/login" className="btn btn-secondary btn-sm">
               Sign In
             </Link>

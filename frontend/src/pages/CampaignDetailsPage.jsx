@@ -3,8 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { Badge } from '../components/Badge';
 import { Pagination } from '../components/Pagination';
-import { WebhookSimulatorModal } from '../components/WebhookSimulatorModal';
-import { Send, CheckCircle2, XCircle, Clock, Radio, ArrowLeft, RefreshCw, AlertCircle, FileText, Edit2, ExternalLink } from 'lucide-react';
+import { Send, CheckCircle2, XCircle, Clock, ArrowLeft, RefreshCw, AlertCircle, FileText, Edit2, ExternalLink } from 'lucide-react';
 
 export const CampaignDetailsPage = () => {
   const { id } = useParams();
@@ -17,8 +16,6 @@ export const CampaignDetailsPage = () => {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [actionSuccess, setActionSuccess] = useState('');
-  
-  const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
 
   const fetchCampaignDetails = async (isBackground = false) => {
     try {
@@ -136,12 +133,6 @@ export const CampaignDetailsPage = () => {
           <button className="btn btn-primary btn-sm" onClick={handleSendNow} disabled={sending}>
             {sending ? <span className="spinner" style={{ width: '14px', height: '14px' }} /> : <><Send size={14} /> {campaign?.status === 'DRAFT' ? 'Send Campaign Now' : 'Re-send Email Campaign'}</>}
           </button>
-
-          {(campaign?.status === 'SENT' || campaign?.status === 'SENDING') && (
-            <button className="btn btn-secondary btn-sm" onClick={() => setIsSimulatorOpen(true)} style={{ borderColor: '#0284c7', color: '#0284c7' }}>
-              <Radio size={14} /> Simulate Webhook Delivery
-            </button>
-          )}
         </div>
       </div>
 
@@ -179,12 +170,12 @@ export const CampaignDetailsPage = () => {
       {/* Content Preview Box */}
       <div className="glass-panel" style={{ padding: '1.25rem' }}>
         <h4 style={{ fontSize: '0.85rem', textTransform: 'uppercase', color: '#64748b', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-          <FileText size={16} /> Dispatched Email Template Preview
+          <FileText size={16} /> Email Preview
         </h4>
         <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
           <div style={{ background: '#00925d', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ color: '#ffffff', fontWeight: '700', fontSize: '1rem', letterSpacing: '-0.3px' }}>MailStream Pro</span>
-            <span style={{ color: '#dcfce7', fontSize: '0.75rem', fontWeight: '500' }}>MailStream Pro Template</span>
+            <span style={{ color: '#dcfce7', fontSize: '0.75rem', fontWeight: '500' }}>Template</span>
           </div>
           <div style={{ padding: '1.25rem' }}>
             <h3 style={{ margin: '0 0 0.75rem 0', color: '#0f172a', fontSize: '1.1rem', fontWeight: '700' }}>{campaign?.subject}</h3>
@@ -193,8 +184,8 @@ export const CampaignDetailsPage = () => {
             </div>
           </div>
           <div style={{ background: '#f8fafc', padding: '10px 16px', borderTop: '1px solid #e2e8f0', fontSize: '0.78rem', color: '#64748b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>Targeted Audience Delivery</span>
-            <span style={{ fontWeight: '600', color: '#00925d' }}>Powered by MailStream Pro</span>
+            <span>Target Audience</span>
+            <span style={{ fontWeight: '600', color: '#00925d' }}>MailStream Pro</span>
           </div>
         </div>
       </div>
@@ -202,8 +193,8 @@ export const CampaignDetailsPage = () => {
       {/* Recipient-level Delivery Table */}
       <div className="glass-panel" style={{ padding: '1.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h3 style={{ color: '#0f172a' }}>Recipient Delivery Status Breakdown</h3>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <h3 style={{ color: '#0f172a' }}>Delivery Status</h3>
+          <div className="filter-pills-wrapper">
             {['', 'PENDING', 'SENT', 'DELIVERED', 'FAILED'].map((st) => (
               <button
                 key={st}
@@ -242,7 +233,7 @@ export const CampaignDetailsPage = () => {
                       </td>
                       <td style={{ color: '#64748b' }}>
                         {cr.recipientId?.email || 'N/A'}
-                        {cr.failureReason && (
+                        {cr.failureReason && cr.status === 'FAILED' && (
                           <div style={{ fontSize: '0.78rem', color: '#dc2626', marginTop: '0.25rem', maxWidth: '300px', lineHeight: '1.3' }}>
                             ⚠️ {cr.failureReason}
                           </div>
@@ -294,17 +285,6 @@ export const CampaignDetailsPage = () => {
           </>
         )}
       </div>
-
-      {/* Webhook Simulator Modal */}
-      <WebhookSimulatorModal
-        isOpen={isSimulatorOpen}
-        onClose={() => setIsSimulatorOpen(false)}
-        campaignId={id}
-        onSimulated={() => {
-          fetchCampaignDetails();
-          fetchCampaignRecipients(pagination.page);
-        }}
-      />
     </div>
   );
 };

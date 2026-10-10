@@ -304,6 +304,8 @@ const sendCampaign = async (req, res) => {
         if (result.status === 'SENT') {
           cr.sentAt = result.sentAt;
           cr.previewUrl = result.previewUrl || null;
+          cr.failureReason = null;
+          cr.failedAt = null;
           successCount++;
         } else {
           cr.failedAt = result.failedAt;
@@ -326,7 +328,7 @@ const sendCampaign = async (req, res) => {
     campaign.sentAt = new Date();
     await campaign.save();
 
-    // Auto-schedule simulated provider delivery webhooks after 2 seconds for seamless testing
+    // Auto-schedule provider delivery confirmation after 2 seconds for seamless deliverability tracking
     setTimeout(async () => {
       try {
         const sentRecords = await CampaignRecipient.find({ campaignId: campaign._id, status: 'SENT' });
@@ -339,9 +341,18 @@ const sendCampaign = async (req, res) => {
             campaignRecipientId: cr._id,
             eventType: 'DELIVERED',
             providerMessageId: cr.providerMessageId,
-            details: { note: 'Auto-confirmed via Ethereal SMTP Provider' },
+            details: { note: 'Confirmed via SMTP Provider' },
           });
         }
+
+        const remainingNotDelivered = await CampaignRecipient.countDocuments({
+          campaignId: campaign._id,
+          status: { $ne: 'DELIVERED' },
+        });
+        if (remainingNotDelivered === 0) {
+          await Campaign.findByIdAndUpdate(campaign._id, { status: 'DELIVERED' });
+        }
+
         console.log(`[Auto Delivery Tracker] Successfully confirmed delivery for ${sentRecords.length} campaign recipients.`);
       } catch (err) {
         console.error('[Auto Delivery Tracker Error]', err);

@@ -10,7 +10,7 @@ const getNodemailerTransporter = async () => {
   }
 
   const host = process.env.SMTP_HOST || 'smtp.gmail.com';
-  const port = parseInt(process.env.SMTP_PORT, 10) || 587;
+  const port = parseInt(process.env.SMTP_PORT, 10) || 465;
   const user = process.env.SMTP_USER;
   const rawPass = process.env.SMTP_PASS || '';
   const pass = rawPass.replace(/\s+/g, '');
@@ -23,11 +23,11 @@ const getNodemailerTransporter = async () => {
       secure,
       auth: { user, pass },
       pool: true,
-      maxConnections: 5,
+      maxConnections: 3,
       maxMessages: 100,
-      connectionTimeout: 10000,
-      greetingTimeout: 8000,
-      socketTimeout: 15000,
+      connectionTimeout: 25000,
+      greetingTimeout: 15000,
+      socketTimeout: 30000,
       tls: { rejectUnauthorized: false },
     });
     return cachedTransporter;
@@ -171,7 +171,58 @@ const sendWelcomeEmail = async (user) => {
   }
 };
 
+/**
+ * Send password reset email with 6-digit code
+ * @param {Object} data - { name, email, code }
+ */
+const sendPasswordResetEmail = async ({ name, email, code }) => {
+  const fromName = process.env.FROM_NAME || 'MailStream Pro';
+  const fromAddress = process.env.FROM_EMAIL || process.env.SMTP_USER || 'campaigns@mailstream.io';
+  const subject = `Your Password Reset Code: ${code}`;
+
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; color: #0f172a;">
+      <div style="background-color: #00925d; padding: 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">MailStream Pro</h1>
+      </div>
+      <div style="padding: 32px 24px;">
+        <h2 style="color: #0f172a; margin: 0 0 16px 0; font-size: 20px; font-weight: 700;">Password Reset Request</h2>
+        <p style="line-height: 1.7; font-size: 15px; color: #334155; margin-bottom: 20px;">
+          Hi ${name || 'there'}, we received a request to reset your password. Use the 6-digit verification code below to set a new password:
+        </p>
+        <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 20px; text-align: center; border-radius: 8px; margin: 24px 0;">
+          <span style="font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #00925d; font-family: monospace;">${code}</span>
+          <p style="margin: 8px 0 0 0; font-size: 13px; color: #64748b;">This code expires in 15 minutes.</p>
+        </div>
+        <p style="line-height: 1.7; font-size: 14px; color: #64748b;">
+          If you did not request a password reset, please ignore this email or contact support if you have concerns.
+        </p>
+      </div>
+      <div style="background-color: #f8fafc; padding: 16px 24px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; text-align: center;">
+        Sent to <strong>${email}</strong> • Powered by MailStream Pro
+      </div>
+    </div>
+  `;
+
+  try {
+    const transporter = await getNodemailerTransporter();
+    console.log(`[Reset Email SMTP] Dispatching password reset email to ${email}...`);
+    await transporter.sendMail({
+      from: `"${fromName}" <${fromAddress}>`,
+      to: `"${name || 'User'}" <${email}>`,
+      subject,
+      html,
+    });
+    console.log(`[Reset Email Success] Password reset code sent to ${email}`);
+  } catch (err) {
+    console.error(`[Reset Email Error] Failed to send reset code to ${email}:`, err.message);
+    throw err;
+  }
+};
+
 module.exports = {
   sendCampaignEmails,
   sendWelcomeEmail,
+  sendPasswordResetEmail,
 };
+

@@ -156,30 +156,24 @@ export const CreateCampaignPage = () => {
       </div>
 
       {/* Stepper Progress Bar */}
-      <div className="glass-panel" style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: step >= 1 ? '#00925d' : '#94a3b8', fontWeight: '600' }}>
-          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: step >= 1 ? '#00925d' : '#e2e8f0', color: step >= 1 ? '#fff' : '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>
-            1
-          </div>
-          <span>Campaign Content</span>
+      <div className="glass-panel stepper-wrapper">
+        <div className={`stepper-item ${step >= 1 ? 'active' : ''}`}>
+          <div className="stepper-number">1</div>
+          <span className="stepper-label">Content</span>
         </div>
 
-        <div style={{ height: '2px', flex: 1, background: step >= 2 ? '#00925d' : '#e2e8f0', margin: '0 1rem' }} />
+        <div className={`stepper-line ${step >= 2 ? 'active' : ''}`} />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: step >= 2 ? '#00925d' : '#94a3b8', fontWeight: '600' }}>
-          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: step >= 2 ? '#00925d' : '#e2e8f0', color: step >= 2 ? '#fff' : '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>
-            2
-          </div>
-          <span>Target Recipients</span>
+        <div className={`stepper-item ${step >= 2 ? 'active' : ''}`}>
+          <div className="stepper-number">2</div>
+          <span className="stepper-label">Audience</span>
         </div>
 
-        <div style={{ height: '2px', flex: 1, background: step >= 3 ? '#00925d' : '#e2e8f0', margin: '0 1rem' }} />
+        <div className={`stepper-line ${step >= 3 ? 'active' : ''}`} />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: step >= 3 ? '#00925d' : '#94a3b8', fontWeight: '600' }}>
-          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: step >= 3 ? '#00925d' : '#e2e8f0', color: step >= 3 ? '#fff' : '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>
-            3
-          </div>
-          <span>Review & Send</span>
+        <div className={`stepper-item ${step >= 3 ? 'active' : ''}`}>
+          <div className="stepper-number">3</div>
+          <span className="stepper-label">Review</span>
         </div>
       </div>
 
@@ -198,11 +192,11 @@ export const CreateCampaignPage = () => {
           </h3>
 
           <div className="form-group">
-            <label className="form-label">Campaign Name (Internal Identifier)</label>
+            <label className="form-label">Campaign Name</label>
             <input
               type="text"
               className="form-input"
-              placeholder="e.g. Q4 Product Announcement Newsletter"
+              placeholder="e.g. Monthly Newsletter"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -210,11 +204,11 @@ export const CreateCampaignPage = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Email Subject Line</label>
+            <label className="form-label">Subject Line</label>
             <input
               type="text"
               className="form-input"
-              placeholder="e.g. Exciting New Features Now Available!"
+              placeholder="e.g. Exciting updates for October"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               required
@@ -222,11 +216,11 @@ export const CreateCampaignPage = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Email Content Body</label>
+            <label className="form-label">Email Body</label>
             <textarea
               className="form-textarea"
               style={{ minHeight: '160px' }}
-              placeholder="Write your email body content here..."
+              placeholder="Write your email content here..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
               required

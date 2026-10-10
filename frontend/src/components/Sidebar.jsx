@@ -22,87 +22,49 @@ export const Sidebar = ({ mobileMenuOpen, onCloseMobileMenu }) => {
       />
 
       <aside className={`app-sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-        {/* Mobile Header Banner (Matching Brevo mobile drawer header) */}
-        <div
-          className="mobile-drawer-header"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '1.25rem 1.25rem',
-            background: '#e6f4ea',
-            borderBottom: '1px solid #c6f6d5',
-            margin: '-1.5rem -1rem 1.25rem -1rem',
-          }}
-        >
+        {/* Mobile Header Banner (Only visible on mobile screen sizes inside slide-out drawer) */}
+        <div className="mobile-drawer-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#00925d', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
               <Mail size={16} />
             </div>
-            <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#00925d', letterSpacing: '-0.03em' }}>
+            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#00925d', letterSpacing: '-0.03em' }}>
               MailStream <span style={{ color: '#0f172a' }}>Pro</span>
             </span>
           </div>
           <button
             onClick={onCloseMobileMenu}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#475569', padding: '0.2rem' }}
+            aria-label="Close menu"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#475569', padding: '0.2rem', display: 'flex', alignItems: 'center' }}
           >
             <X size={22} />
           </button>
         </div>
 
-        {/* Desktop Menu Header */}
-        <div
-          className="desktop-menu-header"
-          style={{
-            fontSize: '0.72rem',
-            fontWeight: '700',
-            color: '#94a3b8',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            padding: '0 0.75rem 0.5rem 0.75rem',
-          }}
-        >
-          Navigation
-        </div>
+
 
         {/* Nav Links */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', flex: 1 }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1 }}>
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.to === '/campaigns'}
+                end={item.to === '/dashboard'}
                 onClick={onCloseMobileMenu}
-                style={({ isActive }) => ({
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '12px',
-                  fontSize: '0.95rem',
-                  fontWeight: isActive ? '700' : '500',
-                  color: isActive ? '#0f172a' : '#334155',
-                  background: isActive ? '#dcfce7' : 'transparent',
-                  textDecoration: 'none',
-                  transition: 'var(--transition)',
-                })}
+                className={({ isActive }) => `sidebar-nav-link ${isActive ? 'active' : ''}`}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                  <Icon size={20} style={{ color: '#0f172a' }} />
-                  <span>{item.label}</span>
-                </div>
-                <ArrowRight size={16} style={{ color: '#64748b', opacity: 0.7 }} />
+                <Icon size={18} className="nav-icon" />
+                <span>{item.label}</span>
               </NavLink>
             );
           })}
-        </div>
+        </nav>
 
-        {/* User Account Section at bottom of drawer */}
-        <div className="mobile-user-profile-section" style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #e2e8f0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.85rem', padding: '0 0.5rem' }}>
+        {/* User Account Section at bottom (Only visible in mobile slide-out drawer) */}
+        <div className="mobile-user-profile-section">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.85rem', padding: '0 0.25rem' }}>
             <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#e6f4ea', color: '#00925d', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: '700' }}>
               <UserIcon size={18} />
             </div>
@@ -121,7 +83,7 @@ export const Sidebar = ({ mobileMenuOpen, onCloseMobileMenu }) => {
               onCloseMobileMenu();
               logout();
             }}
-            style={{ width: '100%', fontSize: '0.88rem', justifyContent: 'center', borderRadius: '10px' }}
+            style={{ width: '100%', fontSize: '0.88rem', justifyContent: 'center', borderRadius: '8px' }}
           >
             <LogOut size={16} /> Sign Out
           </button>
