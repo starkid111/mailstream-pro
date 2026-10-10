@@ -2,39 +2,31 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const nodemailer = require('nodemailer');
 
-let cachedTransporter = null;
-
 const getNodemailerTransporter = async () => {
-  if (cachedTransporter) {
-    return cachedTransporter;
-  }
-
   const host = process.env.SMTP_HOST || 'smtp.gmail.com';
-  const port = parseInt(process.env.SMTP_PORT, 10) || 465;
   const user = process.env.SMTP_USER;
   const rawPass = process.env.SMTP_PASS || '';
-  const pass = rawPass.replace(/\s+/g, '');
+  const pass = rawPass.trim().replace(/\s+/g, '');
+  const port = parseInt(process.env.SMTP_PORT, 10) || 465;
   const secure = process.env.SMTP_SECURE === 'true' || port === 465;
 
   if (user && pass && user !== 'mock_user') {
-    cachedTransporter = nodemailer.createTransport({
+    // Disable socket pooling (pool: false) to prevent stale container socket hangs on Render/cloud hosts
+    return nodemailer.createTransport({
       host,
       port,
       secure,
       auth: { user, pass },
-      pool: true,
-      maxConnections: 3,
-      maxMessages: 100,
-      connectionTimeout: 25000,
-      greetingTimeout: 15000,
-      socketTimeout: 30000,
+      pool: false,
+      connectionTimeout: 12000,
+      greetingTimeout: 8000,
+      socketTimeout: 15000,
       tls: { rejectUnauthorized: false },
     });
-    return cachedTransporter;
   } else {
     console.log('[Email Service Notice] Generating automatic Ethereal test account...');
     const testAccount = await nodemailer.createTestAccount();
-    cachedTransporter = nodemailer.createTransport({
+    return nodemailer.createTransport({
       host: 'smtp.ethereal.email',
       port: 587,
       secure: false,
@@ -43,9 +35,9 @@ const getNodemailerTransporter = async () => {
         pass: testAccount.pass,
       },
     });
-    return cachedTransporter;
   }
 };
+
 
 /**
  * Send campaign emails via Nodemailer (SMTP)
