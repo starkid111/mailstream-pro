@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Send, PlusCircle, X, LogOut, User as UserIcon, ArrowRight, Mail } from 'lucide-react';
+import { LayoutDashboard, Users, Send, PlusCircle, X, LogOut, User as UserIcon, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const Sidebar = ({ mobileMenuOpen, onCloseMobileMenu }) => {
@@ -22,29 +22,41 @@ export const Sidebar = ({ mobileMenuOpen, onCloseMobileMenu }) => {
       />
 
       <aside className={`app-sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-        {/* Mobile Header Banner (Only visible on mobile screen sizes inside slide-out drawer) */}
+        {/* Mobile Header (only visible on mobile) */}
         <div className="mobile-drawer-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#00925d', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-              <Mail size={16} />
+            <div
+              style={{
+                width: '28px', height: '28px', borderRadius: '7px',
+                background: 'linear-gradient(135deg, #34d399, #059669)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff',
+                boxShadow: '0 0 16px rgba(16, 185, 129, 0.35)',
+              }}
+            >
+              <Mail size={15} />
             </div>
-            <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#00925d', letterSpacing: '-0.03em' }}>
-              MailStream <span style={{ color: '#0f172a' }}>Pro</span>
+            <span style={{ fontSize: '1.05rem', fontWeight: '700', color: '#fff', letterSpacing: '-0.03em' }}>
+              MailStream <span style={{ color: '#10b981' }}>Pro</span>
             </span>
           </div>
           <button
             onClick={onCloseMobileMenu}
             aria-label="Close menu"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#475569', padding: '0.2rem', display: 'flex', alignItems: 'center' }}
+            style={{
+              background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+              cursor: 'pointer', color: '#a1a1a1', padding: '0.3rem', borderRadius: '6px',
+              display: 'flex', alignItems: 'center',
+            }}
           >
-            <X size={22} />
+            <X size={20} />
           </button>
         </div>
 
-
+        {/* Nav Label */}
+        <div className="desktop-menu-header" style={{ marginTop: '0.5rem' }}>Navigation</div>
 
         {/* Nav Links */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1 }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', flex: 1 }}>
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -55,24 +67,36 @@ export const Sidebar = ({ mobileMenuOpen, onCloseMobileMenu }) => {
                 onClick={onCloseMobileMenu}
                 className={({ isActive }) => `sidebar-nav-link ${isActive ? 'active' : ''}`}
               >
-                <Icon size={18} className="nav-icon" />
+                <Icon size={16} className="nav-icon" />
                 <span>{item.label}</span>
               </NavLink>
             );
           })}
         </nav>
 
-        {/* User Account Section at bottom (Only visible in mobile slide-out drawer) */}
+        {/* Mobile User Section */}
         <div className="mobile-user-profile-section">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.85rem', padding: '0 0.25rem' }}>
-            <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#e6f4ea', color: '#00925d', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: '700' }}>
-              <UserIcon size={18} />
+          <div
+            style={{
+              display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.85rem',
+              padding: '0.75rem', borderRadius: '10px', background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
+            <div
+              style={{
+                width: '32px', height: '32px', borderRadius: '50%',
+                background: 'rgba(16, 185, 129, 0.15)', color: '#10b981',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}
+            >
+              <UserIcon size={16} />
             </div>
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontWeight: '700', fontSize: '0.88rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontWeight: '600', fontSize: '0.85rem', color: '#ededed', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {user?.name || 'User Account'}
               </div>
-              <div style={{ fontSize: '0.78rem', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontSize: '0.75rem', color: '#6b6b6b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {user?.email}
               </div>
             </div>
@@ -83,9 +107,9 @@ export const Sidebar = ({ mobileMenuOpen, onCloseMobileMenu }) => {
               onCloseMobileMenu();
               logout();
             }}
-            style={{ width: '100%', fontSize: '0.88rem', justifyContent: 'center', borderRadius: '8px' }}
+            style={{ width: '100%', fontSize: '0.85rem', justifyContent: 'center' }}
           >
-            <LogOut size={16} /> Sign Out
+            <LogOut size={15} /> Sign Out
           </button>
         </div>
       </aside>

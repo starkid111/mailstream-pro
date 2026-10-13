@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User as UserIcon, Mail, Menu, X, Bell, HelpCircle } from 'lucide-react';
+import { LogOut, User as UserIcon, Mail, Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
@@ -11,8 +11,10 @@ export const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
       className="main-navbar"
       style={{
         height: '64px',
-        borderBottom: '1px solid #e2e8f0',
-        background: '#ffffff',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        background: 'rgba(0, 0, 0, 0.7)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -26,27 +28,27 @@ export const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
       <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
         <div
           style={{
-            width: '34px',
-            height: '34px',
+            width: '30px',
+            height: '30px',
             borderRadius: '8px',
-            background: '#00925d',
+            background: 'linear-gradient(135deg, #34d399, #059669)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: '#fff',
-            boxShadow: '0 2px 8px rgba(0, 146, 93, 0.25)',
+            boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)',
             flexShrink: 0,
           }}
         >
-          <Mail size={18} />
+          <Mail size={16} />
         </div>
-        <span style={{ fontSize: '1.25rem', fontWeight: '800', letterSpacing: '-0.03em', color: '#00925d' }}>
-          MailStream <span style={{ color: '#0f172a' }}>Pro</span>
+        <span style={{ fontSize: '1.1rem', fontWeight: '700', letterSpacing: '-0.03em', color: '#fff' }}>
+          MailStream <span style={{ color: '#10b981' }}>Pro</span>
         </span>
       </Link>
 
       {/* Right Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
         {isAuthenticated ? (
           <>
             {/* Desktop User Badge */}
@@ -55,40 +57,46 @@ export const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
               style={{
                 alignItems: 'center',
                 gap: '0.4rem',
-                background: '#f8fafc',
-                padding: '0.35rem 0.75rem',
-                borderRadius: 'var(--radius-full)',
-                fontSize: '0.85rem',
-                border: '1px solid #e2e8f0',
-                color: '#0f172a',
+                background: 'rgba(255, 255, 255, 0.05)',
+                padding: '0.3rem 0.85rem',
+                borderRadius: '999px',
+                fontSize: '0.83rem',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: '#ededed',
               }}
             >
-              <UserIcon size={15} style={{ color: '#00925d' }} />
-              <span style={{ fontWeight: '600' }}>{user?.name}</span>
+              <UserIcon size={13} style={{ color: '#10b981' }} />
+              <span style={{ fontWeight: '500' }}>{user?.name}</span>
             </div>
 
             {/* Desktop Sign Out */}
-            <button className="btn btn-secondary btn-sm desktop-user-pill" onClick={logout} title="Sign Out">
-              <LogOut size={16} /> Sign Out
+            <button
+              className="btn btn-secondary btn-sm desktop-user-pill"
+              onClick={logout}
+              title="Sign Out"
+              style={{ gap: '0.35rem' }}
+            >
+              <LogOut size={14} /> Sign Out
             </button>
 
-            {/* Mobile Hamburger Menu Toggle on the Far Right */}
+            {/* Mobile Hamburger */}
             <button
               className="mobile-menu-toggle"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
               style={{
-                background: 'none',
-                border: 'none',
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.1)',
                 cursor: 'pointer',
-                color: '#0f172a',
+                color: '#ededed',
                 padding: '0.4rem',
+                borderRadius: '8px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </>
         ) : (

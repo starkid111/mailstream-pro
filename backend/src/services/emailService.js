@@ -162,30 +162,35 @@ const sendWelcomeEmail = async (user) => {
   const isBrevoHttpApi = brevoApiKey.startsWith('xkeysib-');
 
   const htmlContent = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; color: #0f172a;">
-      <div style="background-color: #00925d; padding: 24px; text-align: center;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">MailStream Pro</h1>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0a0a0a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; color: #ededed;">
+      <div style="background: linear-gradient(135deg, #059669, #10b981); padding: 28px 24px; text-align: center;">
+        <div style="display: inline-flex; align-items: center; gap: 10px;">
+          <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(0,0,0,0.25); display: inline-flex; align-items: center; justify-content: center; vertical-align: middle;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </div>
+          <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; display: inline;">MailStream Pro</h1>
+        </div>
       </div>
-      <div style="padding: 32px 24px;">
-        <h2 style="color: #0f172a; margin: 0 0 16px 0; font-size: 20px; font-weight: 700;">Hi ${user.name}, welcome to MailStream Pro! 👋</h2>
-        <p style="line-height: 1.7; font-size: 15px; color: #334155; margin-bottom: 20px;">
-          We are thrilled to have you on board! With MailStream Pro, you can create email campaigns, target recipients, and track real-time delivery outcomes.
+      <div style="padding: 36px 28px;">
+        <h2 style="color: #ffffff; margin: 0 0 16px 0; font-size: 20px; font-weight: 700; letter-spacing: -0.3px;">Hi ${user.name}, welcome aboard! 👋</h2>
+        <p style="line-height: 1.7; font-size: 15px; color: #a1a1a1; margin-bottom: 20px;">
+          We're thrilled to have you on board! With MailStream Pro, you can create powerful email campaigns, target recipients, and track real-time delivery outcomes — all from one dashboard.
         </p>
-        <div style="background-color: #f8fafc; border-left: 4px solid #00925d; padding: 16px; margin: 24px 0; border-radius: 0 6px 6px 0;">
-          <strong style="color: #0f172a; font-size: 14px;">Quick Tip to Get Started:</strong>
-          <p style="margin: 6px 0 0 0; font-size: 14px; color: #475569;">
-            Add your contacts under <strong>Recipients</strong> and create your first campaign in 3 easy steps!
+        <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); border-left: 4px solid #10b981; padding: 18px 20px; margin: 28px 0; border-radius: 0 10px 10px 0;">
+          <strong style="color: #10b981; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">Quick Start</strong>
+          <p style="margin: 8px 0 0 0; font-size: 14px; color: #a1a1a1; line-height: 1.6;">
+            Add your contacts under <strong style="color: #ededed;">Recipients</strong>, then create your first campaign in just a few clicks.
           </p>
         </div>
-        <p style="line-height: 1.7; font-size: 15px; color: #334155;">
-          If you have any questions, feel free to reply to this email.
+        <p style="line-height: 1.7; font-size: 14px; color: #6b6b6b;">
+          If you have any questions, simply reply to this email — we're always happy to help.
         </p>
-        <p style="margin-top: 24px; font-size: 15px; color: #0f172a; font-weight: 600;">
+        <p style="margin-top: 28px; font-size: 15px; color: #ededed; font-weight: 600;">
           Best regards,<br/>The MailStream Pro Team
         </p>
       </div>
-      <div style="background-color: #f8fafc; padding: 16px 24px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; text-align: center;">
-        Sent to <strong>${user.email}</strong> • Powered by MailStream Pro
+      <div style="background: rgba(255,255,255,0.03); padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: #6b6b6b; text-align: center;">
+        Sent to <strong style="color: #a1a1a1;">${user.email}</strong> &bull; Powered by MailStream Pro
       </div>
     </div>
   `;
@@ -215,25 +220,30 @@ const sendPasswordResetEmail = async ({ name, email, code }) => {
   const isBrevoHttpApi = brevoApiKey.startsWith('xkeysib-');
 
   const htmlContent = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; color: #0f172a;">
-      <div style="background-color: #00925d; padding: 24px; text-align: center;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">MailStream Pro</h1>
-      </div>
-      <div style="padding: 32px 24px;">
-        <h2 style="color: #0f172a; margin: 0 0 16px 0; font-size: 20px; font-weight: 700;">Password Reset Request</h2>
-        <p style="line-height: 1.7; font-size: 15px; color: #334155; margin-bottom: 20px;">
-          Hi ${name || 'there'}, we received a request to reset your password. Use the 6-digit verification code below to set a new password:
-        </p>
-        <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; padding: 20px; text-align: center; border-radius: 8px; margin: 24px 0;">
-          <span style="font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #00925d; font-family: monospace;">${code}</span>
-          <p style="margin: 8px 0 0 0; font-size: 13px; color: #64748b;">This code expires in 15 minutes.</p>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0a0a0a; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; color: #ededed;">
+      <div style="background: linear-gradient(135deg, #059669, #10b981); padding: 28px 24px; text-align: center;">
+        <div style="display: inline-flex; align-items: center; gap: 10px;">
+          <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(0,0,0,0.25); display: inline-flex; align-items: center; justify-content: center; vertical-align: middle;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </div>
+          <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; display: inline;">MailStream Pro</h1>
         </div>
-        <p style="line-height: 1.7; font-size: 14px; color: #64748b;">
+      </div>
+      <div style="padding: 36px 28px;">
+        <h2 style="color: #ffffff; margin: 0 0 16px 0; font-size: 20px; font-weight: 700; letter-spacing: -0.3px;">Password Reset Request</h2>
+        <p style="line-height: 1.7; font-size: 15px; color: #a1a1a1; margin-bottom: 20px;">
+          Hi ${name || 'there'}, we received a request to reset your password. Use the 6-digit verification code below:
+        </p>
+        <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); padding: 28px 20px; text-align: center; border-radius: 12px; margin: 24px 0;">
+          <span style="font-size: 36px; font-weight: 800; letter-spacing: 10px; color: #10b981; font-family: monospace;">${code}</span>
+          <p style="margin: 12px 0 0 0; font-size: 13px; color: #6b6b6b;">This code expires in <strong style="color: #a1a1a1;">15 minutes</strong>.</p>
+        </div>
+        <p style="line-height: 1.7; font-size: 14px; color: #6b6b6b;">
           If you did not request a password reset, please ignore this email or contact support if you have concerns.
         </p>
       </div>
-      <div style="background-color: #f8fafc; padding: 16px 24px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; text-align: center;">
-        Sent to <strong>${email}</strong> • Powered by MailStream Pro
+      <div style="background: rgba(255,255,255,0.03); padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: #6b6b6b; text-align: center;">
+        Sent to <strong style="color: #a1a1a1;">${email}</strong> &bull; Powered by MailStream Pro
       </div>
     </div>
   `;

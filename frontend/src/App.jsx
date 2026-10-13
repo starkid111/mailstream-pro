@@ -59,64 +59,71 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <AppLayout>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/recipients"
-              element={
-                <ProtectedRoute>
-                  <RecipientsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/campaigns"
-              element={
-                <ProtectedRoute>
-                  <CampaignsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/campaigns/new"
-              element={
-                <ProtectedRoute>
-                  <CreateCampaignPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/campaigns/:id"
-              element={
-                <ProtectedRoute>
-                  <CampaignDetailsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/campaigns/:id/edit"
-              element={
-                <ProtectedRoute>
-                  <CreateCampaignPage />
-                </ProtectedRoute>
-              }
-            />
-            
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </AppLayout>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route
+            path="*"
+            element={
+              <AppLayout>
+                <Routes>
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
+
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <DashboardPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/recipients"
+                    element={
+                      <ProtectedRoute>
+                        <RecipientsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/campaigns"
+                    element={
+                      <ProtectedRoute>
+                        <CampaignsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/campaigns/new"
+                    element={
+                      <ProtectedRoute>
+                        <CreateCampaignPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/campaigns/:id"
+                    element={
+                      <ProtectedRoute>
+                        <CampaignDetailsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/campaigns/:id/edit"
+                    element={
+                      <ProtectedRoute>
+                        <CreateCampaignPage />
+                      </ProtectedRoute>
+                    }
+                  />
+
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </AppLayout>
+            }
+          />
+        </Routes>
       </Router>
     </AuthProvider>
   );

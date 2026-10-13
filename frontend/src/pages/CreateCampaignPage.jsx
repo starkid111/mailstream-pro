@@ -149,10 +149,12 @@ export const CreateCampaignPage = () => {
   return (
     <div style={{ maxWidth: '850px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div>
-        <h1 style={{ fontSize: '1.6rem', color: '#0f172a' }}>{isEditing ? 'Edit Campaign' : 'Create New Campaign'}</h1>
-        <p style={{ color: '#64748b', fontSize: '0.88rem' }}>
-          {isEditing ? 'Modify your campaign settings and recipient audience' : 'Compose your message and select recipient target list'}
-        </p>
+      <h1 style={{ fontSize: '1.6rem', color: '#fff', fontWeight: '700', letterSpacing: '-0.03em', marginBottom: '0.2rem' }}>
+        {isEditing ? 'Edit Campaign' : 'Create New Campaign'}
+      </h1>
+      <p style={{ color: '#6b6b6b', fontSize: '0.88rem' }}>
+        {isEditing ? 'Modify your campaign settings and recipient audience' : 'Compose your message and select recipient target list'}
+      </p>
       </div>
 
       {/* Stepper Progress Bar */}
@@ -187,8 +189,8 @@ export const CreateCampaignPage = () => {
       {/* STEP 1: Campaign Details */}
       {step === 1 && (
         <div className="glass-panel" style={{ padding: '2rem' }}>
-          <h3 style={{ marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0f172a' }}>
-            <FileText size={20} style={{ color: '#00925d' }} /> Step 1: Campaign Information
+          <h3 style={{ marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', fontWeight: '600' }}>
+            <FileText size={18} style={{ color: '#10b981' }} /> Step 1: Campaign Information
           </h3>
 
           <div className="form-group">
@@ -239,8 +241,8 @@ export const CreateCampaignPage = () => {
       {step === 2 && (
         <div className="glass-panel" style={{ padding: '2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0f172a' }}>
-              <Users size={20} style={{ color: '#0284c7' }} /> Step 2: Target Audience ({selectedRecipientIds.length} Selected)
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', fontWeight: '600' }}>
+              <Users size={18} style={{ color: '#38bdf8' }} /> Step 2: Target Audience ({selectedRecipientIds.length} Selected)
             </h3>
 
             <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -274,7 +276,7 @@ export const CreateCampaignPage = () => {
               No recipients found. Please add recipients from the Recipients page first.
             </div>
           ) : (
-            <div style={{ maxHeight: '320px', overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: 'var(--radius-sm)' }}>
+          <div style={{ maxHeight: '320px', overflowY: 'auto', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-sm)' }}>
               {recipients.map((rec) => {
                 const isSelected = selectedRecipientIds.includes(rec._id);
                 return (
@@ -286,8 +288,8 @@ export const CreateCampaignPage = () => {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       padding: '0.75rem 1rem',
-                      borderBottom: '1px solid #e2e8f0',
-                      background: isSelected ? '#e6f4ea' : '#ffffff',
+                      borderBottom: '1px solid rgba(255,255,255,0.06)',
+                      background: isSelected ? 'rgba(16,185,129,0.08)' : 'transparent',
                       cursor: 'pointer',
                       transition: 'var(--transition)',
                     }}
@@ -297,14 +299,14 @@ export const CreateCampaignPage = () => {
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => {}} // Handled by div click
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', accentColor: '#10b981' }}
                       />
                       <div>
-                        <div style={{ fontWeight: '600', fontSize: '0.9rem', color: '#0f172a' }}>{rec.firstName} {rec.lastName}</div>
-                        <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{rec.email}</div>
+                        <div style={{ fontWeight: '600', fontSize: '0.88rem', color: '#ededed' }}>{rec.firstName} {rec.lastName}</div>
+                        <div style={{ fontSize: '0.78rem', color: '#6b6b6b' }}>{rec.email}</div>
                       </div>
                     </div>
-                    {isSelected && <CheckCircle2 size={16} style={{ color: '#00925d' }} />}
+                    {isSelected && <CheckCircle2 size={15} style={{ color: '#10b981' }} />}
                   </div>
                 );
               })}
@@ -325,39 +327,46 @@ export const CreateCampaignPage = () => {
       {/* STEP 3: Review & Send */}
       {step === 3 && (
         <div className="glass-panel" style={{ padding: '2rem' }}>
-          <h3 style={{ marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0f172a' }}>
-            <Send size={20} style={{ color: '#00925d' }} /> Step 3: Review & Launch Campaign
+          <h3 style={{ marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', fontWeight: '600' }}>
+            <Send size={18} style={{ color: '#10b981' }} /> Step 3: Review & Launch Campaign
           </h3>
 
-          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '1.25rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', padding: '1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             <div>
-              <span style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase' }}>Campaign Name:</span>
-              <div style={{ fontWeight: '700', fontSize: '1.1rem', color: '#0f172a' }}>{name}</div>
+              <span style={{ fontSize: '0.72rem', color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '700' }}>Campaign Name:</span>
+              <div style={{ fontWeight: '700', fontSize: '1.05rem', color: '#fff', marginTop: '0.2rem' }}>{name}</div>
             </div>
             <div>
-              <span style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase' }}>Subject Line:</span>
-              <div style={{ fontWeight: '600', color: '#0f172a' }}>{subject}</div>
+              <span style={{ fontSize: '0.72rem', color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '700' }}>Subject Line:</span>
+              <div style={{ fontWeight: '600', color: '#ededed', marginTop: '0.2rem' }}>{subject}</div>
             </div>
             <div>
-              <span style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase' }}>Targeted Recipients Count:</span>
-              <div style={{ fontWeight: '700', color: '#00925d' }}>{selectedRecipientIds.length} Recipients Selected</div>
+              <span style={{ fontSize: '0.72rem', color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '700' }}>Targeted Recipients Count:</span>
+              <div style={{ fontWeight: '700', color: '#10b981', marginTop: '0.2rem' }}>{selectedRecipientIds.length} Recipients Selected</div>
             </div>
             <div>
-              <span style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', fontWeight: '600' }}>Email Deliverable Preview:</span>
-              <div style={{ marginTop: '0.5rem', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
-                <div style={{ background: '#00925d', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#ffffff', fontWeight: '700', fontSize: '1rem', letterSpacing: '-0.3px' }}>MailStream Pro</span>
-                  <span style={{ color: '#dcfce7', fontSize: '0.75rem', fontWeight: '500' }}>MailStream Pro Template</span>
+              <span style={{ fontSize: '0.72rem', color: '#6b6b6b', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: '700' }}>Email Deliverable Preview:</span>
+              {/* Dark email mock window */}
+              <div style={{ marginTop: '0.75rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', background: '#070707', overflow: 'hidden', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.6)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.6rem 1rem', borderBottom: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}>
+                  <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#2a2a2a', display: 'block' }} />
+                  <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#2a2a2a', display: 'block' }} />
+                  <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: '#2a2a2a', display: 'block' }} />
+                  <span style={{ marginLeft: '0.5rem', fontFamily: 'monospace', fontSize: '0.7rem', color: '#6b6b6b' }}>email_preview.html</span>
                 </div>
-                <div style={{ padding: '1.25rem' }}>
-                  <h3 style={{ margin: '0 0 0.75rem 0', color: '#0f172a', fontSize: '1.1rem', fontWeight: '700' }}>{subject || 'No Subject Specified'}</h3>
-                  <div style={{ fontSize: '0.9rem', color: '#334155', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
+                <div style={{ background: 'linear-gradient(135deg, #059669, #10b981)', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ color: '#fff', fontWeight: '700', fontSize: '0.95rem', letterSpacing: '-0.02em' }}>MailStream Pro</span>
+                  <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.72rem' }}>MailStream Pro Template</span>
+                </div>
+                <div style={{ padding: '1.25rem', background: '#0a0a0a' }}>
+                  <h3 style={{ margin: '0 0 0.75rem 0', color: '#fff', fontSize: '1rem', fontWeight: '700' }}>{subject || 'No Subject Specified'}</h3>
+                  <div style={{ fontSize: '0.88rem', color: '#a1a1a1', whiteSpace: 'pre-wrap', lineHeight: '1.65' }}>
                     {content || 'No email message content provided yet...'}
                   </div>
                 </div>
-                <div style={{ background: '#f8fafc', padding: '10px 16px', borderTop: '1px solid #e2e8f0', fontSize: '0.78rem', color: '#64748b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '9px 16px', borderTop: '1px solid rgba(255,255,255,0.06)', fontSize: '0.74rem', color: '#6b6b6b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span>Sent via MailStream Pro Engine</span>
-                  <span style={{ fontWeight: '600', color: '#00925d' }}>MailStream Verified</span>
+                  <span style={{ fontWeight: '600', color: '#10b981' }}>MailStream Verified</span>
                 </div>
               </div>
             </div>

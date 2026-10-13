@@ -1,454 +1,393 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Users,
-  CheckCircle2,
   ArrowRight,
-  ChevronDown,
-  ChevronUp,
-  Send,
-  Mail,
-  Zap,
-  BarChart3,
-  ShieldCheck,
-  Clock,
-  Search,
-  Filter,
-  Layers,
-  Sparkles,
   Check,
+  Plus,
+  Mail,
+  Store,
+  Palette,
+  Users,
+  Briefcase,
+  HeartHandshake,
+  Inbox,
+  Send,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import './landing.css';
 
-export const LandingPage = () => {
-  const { isAuthenticated } = useAuth();
-  const [openFaq, setOpenFaq] = useState(null);
+const PEOPLE = [
+  { name: 'Amara Okafor', email: 'amara@bakehouse.co', color: '#34d399' },
+  { name: 'Daniel Mensah', email: 'dan@studio.io', color: '#fbbf24' },
+  { name: 'Chioma Eze', email: 'chioma@club.org', color: '#60a5fa' },
+  { name: 'Tunde Bello', email: 'tunde@freelance.dev', color: '#f472b6' },
+];
 
-  const toggleFaq = (index) => {
-    setOpenFaq(openFaq === index ? null : index);
-  };
+const STATUS_FLOW = ['queued', 'sending', 'delivered'];
+const STATUS_LABEL = { queued: 'Queued', sending: 'Sending', delivered: 'Delivered' };
 
-  const faqs = [
-    {
-      q: 'How does real-time delivery tracking work?',
-      a: 'When you launch a campaign, status changes (PENDING -> SENT -> DELIVERED) stream automatically to your dashboard so you see live progress without manually refreshing the page.',
-    },
-    {
-      q: 'Can I target specific recipients for a campaign?',
-      a: 'Yes. You can manage saved contacts under Recipients and choose exactly who should receive each email campaign.',
-    },
-    {
-      q: 'Are my contacts and campaign data private?',
-      a: 'Yes. All recipient lists and campaign data are strictly isolated to your authenticated account.',
-    },
-  ];
+const FAQS = [
+  {
+    q: 'Do I need any technical skills to use MailStream Pro?',
+    a: 'Not at all. If you can write an email, you can send a campaign. Add your contacts, write your message, pick who gets it, and press send.',
+  },
+  {
+    q: 'How do I know my email actually arrived?',
+    a: 'Every person on your list gets a live status — queued, sending, delivered. It updates on its own, so you never have to refresh or guess.',
+  },
+  {
+    q: 'Is it free to start?',
+    a: 'Yes. Create an account and send your first campaign without paying anything.',
+  },
+  {
+    q: 'Who can see my contacts?',
+    a: 'Only you. Your contact lists and campaigns are private to your account and never shared.',
+  },
+];
+
+/* Reveal elements as they scroll into view */
+const useReveal = () => {
+  useEffect(() => {
+    const els = document.querySelectorAll('.rs-reveal');
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))),
+      { threshold: 0.15 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+};
+
+/* Live delivery feed that cycles through statuses */
+const LiveFeed = () => {
+  const [statuses, setStatuses] = useState(PEOPLE.map(() => 'queued'));
+  const [flash, setFlash] = useState(-1);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setStatuses((prev) => {
+        const idx = prev.findIndex((s) => s !== 'delivered');
+        if (idx === -1) return PEOPLE.map(() => 'queued');
+        const next = [...prev];
+        next[idx] = STATUS_FLOW[STATUS_FLOW.indexOf(prev[idx]) + 1];
+        setFlash(idx);
+        return next;
+      });
+    }, 1100);
+    return () => clearInterval(id);
+  }, []);
+
+  const delivered = statuses.filter((s) => s === 'delivered').length;
+  const rate = Math.round((delivered / PEOPLE.length) * 100);
 
   return (
-    <div className="landing-container">
-      {/* 1. Split Hero Section */}
-      <div className="landing-hero-grid">
-        {/* Left Column: Copy & Actions */}
-        <div>
-          <h1 className="landing-hero-title">
-            Send email campaigns that <span style={{ color: '#00925d' }}>reach the inbox</span>
-          </h1>
-          <p className="landing-hero-subtitle">
-            MailStream Pro makes it simple to manage contacts, compose targeted email campaigns, and monitor delivery status live in real time.
-          </p>
-
-          {/* Action Buttons */}
-          <div className="landing-hero-actions">
-            {isAuthenticated ? (
-              <Link to="/dashboard" className="btn btn-primary landing-btn-hero">
-                Go to Dashboard <ArrowRight size={18} />
-              </Link>
-            ) : (
-              <>
-                <Link to="/register" className="btn btn-primary landing-btn-hero">
-                  Get Started Free <ArrowRight size={18} />
-                </Link>
-                <Link to="/login" className="btn btn-secondary landing-btn-hero">
-                  Sign In
-                </Link>
-              </>
-            )}
-          </div>
-
-          {/* Badges */}
-          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', fontSize: '0.88rem', color: '#475569', fontWeight: '500' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <CheckCircle2 size={16} style={{ color: '#00925d' }} /> Contact Management
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <CheckCircle2 size={16} style={{ color: '#00925d' }} /> Live Delivery Status
-            </span>
-          </div>
-        </div>
-
-        {/* Right Column: MacBook Window UI Preview */}
-        <div
-          style={{
-            borderRadius: '14px',
-            overflow: 'hidden',
-            border: '1px solid #cbd5e1',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
-            background: '#ffffff',
-          }}
-        >
-          {/* Top Bar */}
-          <div style={{ background: '#0f172a', padding: '0.85rem 1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444' }} />
-              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b' }} />
-              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981' }} />
-              <span style={{ color: '#94a3b8', fontSize: '0.8rem', marginLeft: '0.5rem', fontFamily: 'monospace', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                mailstream-pro.app / campaign-analytics
-              </span>
-            </div>
-          </div>
-
-          {/* App Preview Body */}
-          <div style={{ padding: '1.25rem', background: '#f8fafc' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <div>
-                <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', fontWeight: '600' }}>Active Campaign</div>
-                <h3 style={{ fontSize: '1.1rem', color: '#0f172a', margin: '0.1rem 0 0 0' }}>Welcome & Onboarding Campaign</h3>
-              </div>
-              <div>
-                <span className="badge badge-delivered">Delivered (100%)</span>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem', marginBottom: '1rem' }}>
-              <div style={{ background: '#ffffff', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Target Audience</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a', marginTop: '0.1rem' }}>2 Recipients</div>
-              </div>
-              <div style={{ background: '#ffffff', padding: '0.85rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Delivered to Inbox</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#00925d', marginTop: '0.1rem' }}>2 (100%)</div>
-              </div>
-            </div>
-
-            {/* Recipient Status Table */}
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
-                <thead style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0' }}>
-                  <tr>
-                    <th style={{ padding: '0.6rem 0.85rem', textAlign: 'left', color: '#475569' }}>RECIPIENT</th>
-                    <th style={{ padding: '0.6rem 0.85rem', textAlign: 'left', color: '#475569' }}>EMAIL</th>
-                    <th style={{ padding: '0.6rem 0.85rem', textAlign: 'left', color: '#475569' }}>STATUS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '0.6rem 0.85rem', fontWeight: '600' }}>Ramadan Adewale</td>
-                    <td style={{ padding: '0.6rem 0.85rem', color: '#64748b' }}>ramadanadex111@gmail.com</td>
-                    <td style={{ padding: '0.6rem 0.85rem' }}><span className="badge badge-delivered">DELIVERED</span></td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.6rem 0.85rem', fontWeight: '600' }}>Rarevision Team</td>
-                    <td style={{ padding: '0.6rem 0.85rem', color: '#64748b' }}>rarevisionns@gmail.com</td>
-                    <td style={{ padding: '0.6rem 0.85rem' }}><span className="badge badge-delivered">DELIVERED</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+    <div className="rs-window">
+      <div className="rs-window-bar">
+        <i /><i /><i />
+        <span className="rs-window-title">October newsletter</span>
+        <span className="rs-live"><span className="rs-pill-dot" /> LIVE</span>
       </div>
-
-      {/* 2. Key Performance Metric Strip */}
-      <div className="landing-metrics-strip">
-        <div className="landing-metric-item">
-          <div style={{ fontSize: '2rem', fontWeight: '800', color: '#00925d', letterSpacing: '-0.02em' }}>99.8%</div>
-          <div style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: '600', marginTop: '0.2rem' }}>Inbox Delivery Rate</div>
+      <div className="rs-window-body">
+        <div className="rs-kpis">
+          <div className="rs-kpi"><small>Recipients</small><strong>{PEOPLE.length}</strong></div>
+          <div className="rs-kpi"><small>Delivered</small><strong>{delivered}</strong></div>
+          <div className="rs-kpi"><small>Success</small><strong style={{ color: '#10b981' }}>{rate}%</strong></div>
         </div>
-        <div className="landing-metric-item">
-          <div style={{ fontSize: '2rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em' }}>&lt; 1.2s</div>
-          <div style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: '600', marginTop: '0.2rem' }}>Avg Dispatch Latency</div>
-        </div>
-        <div className="landing-metric-item">
-          <div style={{ fontSize: '2rem', fontWeight: '800', color: '#00925d', letterSpacing: '-0.02em' }}>Real-time</div>
-          <div style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: '600', marginTop: '0.2rem' }}>Live Delivery Polling</div>
-        </div>
-        <div className="landing-metric-item">
-          <div style={{ fontSize: '2rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em' }}>100%</div>
-          <div style={{ fontSize: '0.88rem', color: '#64748b', fontWeight: '600', marginTop: '0.2rem' }}>Data Privacy Isolation</div>
-        </div>
-      </div>
-
-      {/* 3. Deep-Dive Feature 1: Real-Time Live Delivery Intelligence */}
-      <div className="landing-feature-grid">
-        <div>
-          <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#00925d', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.6rem' }}>
-            REAL-TIME MONITORING
+        {PEOPLE.map((p, i) => (
+          <div key={p.email} className={`rs-feed-row ${flash === i ? 'flash' : ''}`}>
+            <span className="rs-avatar" style={{ background: p.color }}>{p.name[0]}</span>
+            <div>
+              <div className="rs-feed-name">{p.name}</div>
+              <div className="rs-feed-email">{p.email}</div>
+            </div>
+            <span className={`rs-status rs-status-${statuses[i]}`}>{STATUS_LABEL[statuses[i]]}</span>
           </div>
-          <h2 style={{ fontSize: '2.2rem', color: '#0f172a', fontWeight: '800', lineHeight: 1.2, marginBottom: '1rem' }}>
-            Watch dispatches update live without refreshing
-          </h2>
-          <p style={{ color: '#475569', fontSize: '1.02rem', lineHeight: '1.65', marginBottom: '1.5rem' }}>
-            Never guess whether your email landed in your customer's inbox. MailStream Pro streams real-time delivery status transitions directly onto your dashboard.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-              <div style={{ background: '#e6f4ea', color: '#00925d', borderRadius: '50%', padding: '0.25rem', marginTop: '0.1rem' }}>
-                <Check size={16} />
-              </div>
-              <div>
-                <div style={{ fontWeight: '700', color: '#0f172a', fontSize: '0.95rem' }}>Automated Status Transitions</div>
-                <div style={{ color: '#64748b', fontSize: '0.88rem' }}>Recipient rows update automatically from SENT to DELIVERED in seconds.</div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-              <div style={{ background: '#e6f4ea', color: '#00925d', borderRadius: '50%', padding: '0.25rem', marginTop: '0.1rem' }}>
-                <Check size={16} />
-              </div>
-              <div>
-                <div style={{ fontWeight: '700', color: '#0f172a', fontSize: '0.95rem' }}>Detailed Audit Logs</div>
-                <div style={{ color: '#64748b', fontSize: '0.88rem' }}>Inspect specific recipient delivery timestamps and error diagnostics if any email fails.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Feature Visual Widget */}
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.75rem', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.04)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00925d', display: 'inline-block' }} />
-              <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#00925d' }}>STREAMING DELIVERIES</span>
-            </div>
-            <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '500' }}>Updated just now</span>
-          </div>
-
-          {/* Progress Bar Container */}
-          <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '10px', border: '1px solid #f1f5f9', marginBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.5rem', color: '#0f172a' }}>
-              <span>Campaign Dispatch Progress</span>
-              <span style={{ color: '#00925d' }}>100% Completed</span>
-            </div>
-            <div style={{ width: '100%', height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
-              <div style={{ width: '100%', height: '100%', background: '#00925d', borderRadius: '4px' }} />
-            </div>
-          </div>
-
-          {/* Status Breakdown Pills */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', textAlign: 'center' }}>
-            <div style={{ background: '#e6f4ea', padding: '0.75rem 0.5rem', borderRadius: '8px' }}>
-              <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#00925d' }}>100%</div>
-              <div style={{ fontSize: '0.72rem', color: '#00925d', fontWeight: '700', marginTop: '0.1rem' }}>DELIVERED</div>
-            </div>
-            <div style={{ background: '#f1f5f9', padding: '0.75rem 0.5rem', borderRadius: '8px' }}>
-              <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#64748b' }}>0</div>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '700', marginTop: '0.1rem' }}>PENDING</div>
-            </div>
-            <div style={{ background: '#fef2f2', padding: '0.75rem 0.5rem', borderRadius: '8px' }}>
-              <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#ef4444' }}>0</div>
-              <div style={{ fontSize: '0.72rem', color: '#ef4444', fontWeight: '700', marginTop: '0.1rem' }}>FAILED</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Deep-Dive Feature 2: Contact & Audience Management */}
-      <div className="landing-feature-grid">
-        {/* Left Visual Card */}
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '1.75rem', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.04)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '1.25rem' }}>
-            <Search size={16} style={{ color: '#64748b' }} />
-            <span style={{ fontSize: '0.88rem', color: '#64748b' }}>Search contacts by name or email...</span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1rem', border: '1px solid #f1f5f9', borderRadius: '8px' }}>
-              <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#0f172a' }}>Ramadan Adewale</div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>ramadanadex111@gmail.com</div>
-              </div>
-              <span style={{ fontSize: '0.75rem', background: '#e6f4ea', color: '#00925d', padding: '0.2rem 0.6rem', borderRadius: '12px', fontWeight: '600' }}>
-                Active Contact
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.85rem 1rem', border: '1px solid #f1f5f9', borderRadius: '8px' }}>
-              <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#0f172a' }}>Rarevision Team</div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>rarevisionns@gmail.com</div>
-              </div>
-              <span style={{ fontSize: '0.75rem', background: '#e6f4ea', color: '#00925d', padding: '0.2rem 0.6rem', borderRadius: '12px', fontWeight: '600' }}>
-                Active Contact
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Copy Column */}
-        <div>
-          <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#00925d', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.6rem' }}>
-            AUDIENCE MANAGEMENT
-          </div>
-          <h2 style={{ fontSize: '2.2rem', color: '#0f172a', fontWeight: '800', lineHeight: 1.2, marginBottom: '1rem' }}>
-            Organize your recipient list with ease
-          </h2>
-          <p style={{ color: '#475569', fontSize: '1.02rem', lineHeight: '1.65', marginBottom: '1.5rem' }}>
-            Maintain clean contact records, update emails instantly, and target specific audience segments for maximum engagement.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-              <div style={{ background: '#e6f4ea', color: '#00925d', borderRadius: '50%', padding: '0.25rem', marginTop: '0.1rem' }}>
-                <Check size={16} />
-              </div>
-              <div>
-                <div style={{ fontWeight: '700', color: '#0f172a', fontSize: '0.95rem' }}>Instant Search & Pagination</div>
-                <div style={{ color: '#64748b', fontSize: '0.88rem' }}>Quickly locate recipient records across hundreds of contacts.</div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-              <div style={{ background: '#e6f4ea', color: '#00925d', borderRadius: '50%', padding: '0.25rem', marginTop: '0.1rem' }}>
-                <Check size={16} />
-              </div>
-              <div>
-                <div style={{ fontWeight: '700', color: '#0f172a', fontSize: '0.95rem' }}>Targeted Campaign Selection</div>
-                <div style={{ color: '#64748b', fontSize: '0.88rem' }}>Pick exact recipients or send to your entire audience list in one click.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 5. Clean 3-Step Horizontal Stepper (No AI Cards) */}
-      <div style={{ margin: '5rem 0' }}>
-        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-          <h2 style={{ fontSize: '2.1rem', color: '#0f172a', fontWeight: '800' }}>How MailStream Pro Works</h2>
-          <p style={{ color: '#64748b', fontSize: '1rem', marginTop: '0.4rem' }}>
-            Launch your campaign in 3 simple steps
-          </p>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2.5rem' }}>
-          {/* Step 1 */}
-          <div style={{ position: 'relative' }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#00925d', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              STEP 01
-            </div>
-            <h3 style={{ fontSize: '1.25rem', color: '#0f172a', fontWeight: '700', marginBottom: '0.5rem' }}>
-              Save Your Recipients
-            </h3>
-            <p style={{ color: '#64748b', fontSize: '0.95rem', lineHeight: '1.6' }}>
-              Add contact names and email addresses under Recipients. Organize contacts with built-in search tools.
-            </p>
-          </div>
-
-          {/* Step 2 */}
-          <div style={{ position: 'relative' }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#00925d', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              STEP 02
-            </div>
-            <h3 style={{ fontSize: '1.25rem', color: '#0f172a', fontWeight: '700', marginBottom: '0.5rem' }}>
-              Compose & Select Audience
-            </h3>
-            <p style={{ color: '#64748b', fontSize: '0.95rem', lineHeight: '1.6' }}>
-              Draft your email subject line and message content. Choose target contacts using our campaign creation wizard.
-            </p>
-          </div>
-
-          {/* Step 3 */}
-          <div style={{ position: 'relative' }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: '800', color: '#00925d', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              STEP 03
-            </div>
-            <h3 style={{ fontSize: '1.25rem', color: '#0f172a', fontWeight: '700', marginBottom: '0.5rem' }}>
-              Dispatch & Track Live
-            </h3>
-            <p style={{ color: '#64748b', fontSize: '0.95rem', lineHeight: '1.6' }}>
-              Hit dispatch and watch live delivery status updates update automatically right on your campaign monitor screen.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* 6. FAQ Accordion */}
-      <div style={{ marginBottom: '5rem', maxWidth: '800px', margin: '0 auto 5rem auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.8rem', color: '#0f172a', fontWeight: '800' }}>Frequently Asked Questions</h2>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '8px',
-                overflow: 'hidden',
-              }}
-            >
-              <button
-                onClick={() => toggleFaq(index)}
-                style={{
-                  width: '100%',
-                  padding: '1.1rem 1.4rem',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  fontSize: '0.98rem',
-                  fontWeight: '600',
-                  color: '#0f172a',
-                }}
-              >
-                <span>{faq.q}</span>
-                {openFaq === index ? <ChevronUp size={18} style={{ color: '#00925d' }} /> : <ChevronDown size={18} style={{ color: '#64748b' }} />}
-              </button>
-              {openFaq === index && (
-                <div style={{ padding: '0 1.4rem 1.1rem 1.4rem', color: '#475569', fontSize: '0.9rem', lineHeight: '1.6', borderTop: '1px solid #f1f5f9', paddingTop: '0.85rem' }}>
-                  {faq.a}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 7. Bottom Conversion Banner */}
-      <div
-        style={{
-          background: '#00925d',
-          borderRadius: '14px',
-          padding: '3.5rem 2rem',
-          textAlign: 'center',
-          color: '#ffffff',
-          boxShadow: '0 10px 25px -5px rgba(0, 146, 93, 0.3)',
-        }}
-      >
-        <h2 style={{ fontSize: '2.2rem', fontWeight: '800', color: '#ffffff', marginBottom: '0.85rem' }}>
-          Ready to launch your email campaign?
-        </h2>
-        <p style={{ fontSize: '1.05rem', opacity: 0.95, maxWidth: '560px', margin: '0 auto 1.75rem auto', lineHeight: '1.6' }}>
-          Create your account today and start sending targeted emails with MailStream Pro.
-        </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          {isAuthenticated ? (
-            <Link to="/dashboard" className="btn btn-secondary" style={{ padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: '700', color: '#00925d' }}>
-              Go to Dashboard
-            </Link>
-          ) : (
-            <Link to="/register" className="btn btn-secondary" style={{ padding: '0.85rem 2rem', fontSize: '1rem', fontWeight: '700', color: '#00925d' }}>
-              Get Started Free
-            </Link>
-          )}
-        </div>
+        ))}
       </div>
     </div>
   );
 };
 
+/* Typewriter subject line for the "write" card */
+const TypingSubject = () => {
+  const full = 'Our new menu is here 🍰';
+  const [text, setText] = useState('');
+  useEffect(() => {
+    let i = 0;
+    const id = setInterval(() => {
+      i = i > full.length + 12 ? 0 : i + 1;
+      setText(full.slice(0, i));
+    }, 110);
+    return () => clearInterval(id);
+  }, []);
+  return <b className="rs-typing">{text}</b>;
+};
+
+export const LandingPage = () => {
+  const { isAuthenticated } = useAuth();
+  const [scrolled, setScrolled] = useState(false);
+  const [openFaq, setOpenFaq] = useState(0);
+  const cardsRef = useRef(null);
+  useReveal();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  /* Spotlight that follows the cursor on cards */
+  const handleCardMove = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`);
+    e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`);
+  };
+
+  const primaryCta = isAuthenticated
+    ? { to: '/dashboard', label: 'Go to dashboard' }
+    : { to: '/register', label: 'Get started' };
+
+  return (
+    <div className="rs-page">
+      {/* Header */}
+      <header className={`rs-header ${scrolled ? 'scrolled' : ''}`}>
+        <div className="rs-container rs-header-inner">
+          <Link to="/" className="rs-logo" id="landing-logo">
+            <span className="rs-logo-mark"><Mail size={15} color="#000" strokeWidth={2.5} /></span>
+            MailStream Pro
+          </Link>
+          <nav className="rs-nav" aria-label="Main">
+            <a href="#features">Features</a>
+            <a href="#live">Live tracking</a>
+            <a href="#how">How it works</a>
+            <a href="#faq">FAQ</a>
+          </nav>
+          <div className="rs-header-actions">
+            {!isAuthenticated && (
+              <Link to="/login" className="rs-btn rs-btn-sm rs-btn-ghost" id="header-login">Log in</Link>
+            )}
+            <Link to={primaryCta.to} className="rs-btn rs-btn-sm rs-btn-glass" id="header-cta">{primaryCta.label}</Link>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        {/* Hero */}
+        <section className="rs-hero">
+          <div className="rs-hero-rays" aria-hidden="true" />
+          <div className="rs-container rs-hero-grid">
+            <div className="rs-hero-copy rs-hero-in">
+              <h1 className="rs-display">
+                Email that <em>lands</em><br />where it matters
+              </h1>
+              <p className="rs-lead">
+                Write one email, send it to everyone who matters, and see the moment it reaches each inbox. No tech skills needed.
+              </p>
+              <div className="rs-hero-actions">
+                <Link to={primaryCta.to} className="rs-btn rs-btn-glass" id="hero-cta">
+                  {primaryCta.label} <ArrowRight size={16} className="rs-arrow" />
+                </Link>
+                {!isAuthenticated && (
+                  <Link to="/login" className="rs-btn rs-btn-ghost" id="hero-login">I have an account</Link>
+                )}
+              </div>
+              <div className="rs-hero-note">
+                <span><Check size={14} color="#10b981" /> Free to start</span>
+                <span><Check size={14} color="#10b981" /> Set up in 2 minutes</span>
+              </div>
+            </div>
+
+            <div className="rs-visual rs-hero-in-2" aria-hidden="true">
+              <div className="rs-visual-glow" />
+              <div className="rs-envelope">
+                <svg viewBox="0 0 300 210" fill="none">
+                  <path d="M20 30 L150 120 L280 30" stroke="rgba(255,255,255,0.55)" strokeWidth="2" strokeLinejoin="round" />
+                  <path d="M20 185 L115 100 M280 185 L185 100" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" />
+                </svg>
+                <div className="rs-envelope-shine" />
+              </div>
+              <div className="rs-toast rs-toast-1">
+                <span className="rs-toast-icon"><Check size={14} /></span>
+                <div><b>Delivered</b><small>ramadanadex111@gmail.com</small></div>
+              </div>
+              <div className="rs-toast rs-toast-3">
+                <span className="rs-toast-icon"><Inbox size={14} /></span>
+                <div><b>In the inbox</b><small>just now</small></div>
+              </div>
+              <div className="rs-toast rs-toast-2">
+                <span className="rs-toast-icon"><Send size={14} /></span>
+                <div><b>248 sent</b><small>100% delivered</small></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Audience strip */}
+        <section className="rs-audience rs-reveal">
+          <div className="rs-container">
+            <p>Made for people who'd rather send than set up.</p>
+            <div className="rs-audience-row">
+              <span className="rs-audience-item"><Store size={18} /> Small businesses</span>
+              <span className="rs-audience-item"><Palette size={18} /> Creators</span>
+              <span className="rs-audience-item"><Users size={18} /> Clubs &amp; communities</span>
+              <span className="rs-audience-item"><Briefcase size={18} /> Freelancers</span>
+              <span className="rs-audience-item"><HeartHandshake size={18} /> Non-profits</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Features */}
+        <section id="features" className="rs-section rs-section-top">
+          <div className="rs-container">
+            <div className="rs-center rs-reveal">
+              <div className="rs-eyebrow">Everything you need</div>
+              <h2 className="rs-h2">Simple by design.<br />Powerful when it counts.</h2>
+              <p className="rs-sub">Three things done really well — so you spend less time setting up and more time talking to your people.</p>
+            </div>
+
+            <div className="rs-cards" ref={cardsRef}>
+              <article className="rs-card rs-reveal rs-d1" onMouseMove={handleCardMove}>
+                <div className="rs-card-visual">
+                  {PEOPLE.slice(0, 3).map((p, i) => (
+                    <div key={p.email} className={`rs-mini-row ${i === 0 ? 'hl' : ''}`}>
+                      <span className="rs-avatar" style={{ background: p.color }}>{p.name[0]}</span>
+                      {p.name}
+                      <span className="rs-mini-muted">{p.email.split('@')[1]}</span>
+                    </div>
+                  ))}
+                  <div className="rs-mini-row" style={{ color: '#6b6b6b' }}>
+                    <Plus size={14} /> Add contact
+                  </div>
+                </div>
+                <h3>Keep your people in one place</h3>
+                <p>Save names and emails once. Find anyone in seconds, and keep your list tidy.</p>
+              </article>
+
+              <article className="rs-card rs-reveal rs-d2" onMouseMove={handleCardMove}>
+                <div className="rs-card-visual">
+                  <div className="rs-field">To: <b>Everyone (248)</b></div>
+                  <div className="rs-field">Subject: <TypingSubject /></div>
+                  <div className="rs-field" style={{ height: 52, lineHeight: 1.5 }}>
+                    Hi there! We've been baking something special…
+                  </div>
+                </div>
+                <h3>Write it once, send to many</h3>
+                <p>Type your message like a normal email, choose who gets it, and hit send.</p>
+              </article>
+
+              <article className="rs-card rs-reveal rs-d3" onMouseMove={handleCardMove}>
+                <div className="rs-card-visual">
+                  <div style={{ fontSize: '0.74rem', color: '#6b6b6b', fontFamily: 'var(--rs-mono)' }}>DELIVERED</div>
+                  <div className="rs-stat-big">99.8%</div>
+                  <div className="rs-bar"><span /></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.9rem', fontSize: '0.74rem', color: '#a1a1a1' }}>
+                    <span>247 inboxes</span><span style={{ color: '#10b981' }}>● live</span>
+                  </div>
+                </div>
+                <h3>Know it arrived</h3>
+                <p>See exactly who received your email — updated live, no refreshing required.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        {/* Live tracking showcase */}
+        <section id="live" className="rs-section rs-section-top">
+          <div className="rs-container rs-showcase">
+            <div className="rs-reveal">
+              <div className="rs-eyebrow">Live tracking</div>
+              <h2 className="rs-h2">Stop wondering.<br />Start knowing.</h2>
+              <p className="rs-sub">The moment you press send, you'll watch each email move from queued to delivered — right on your screen.</p>
+              <ul className="rs-checks">
+                <li><span className="rs-check"><Check size={13} /></span><div><b>Updates on its own</b>No refresh button. Statuses change in front of you.</div></li>
+                <li><span className="rs-check"><Check size={13} /></span><div><b>Person by person</b>See exactly who got it — and who didn't.</div></li>
+                <li><span className="rs-check"><Check size={13} /></span><div><b>Clear reasons if something fails</b>Plain-English notes so you know what to fix.</div></li>
+              </ul>
+            </div>
+            <div className="rs-reveal rs-d2">
+              <LiveFeed />
+            </div>
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section id="how" className="rs-section rs-section-top">
+          <div className="rs-container">
+            <div className="rs-center rs-reveal">
+              <div className="rs-eyebrow">How it works</div>
+              <h2 className="rs-h2">From idea to inbox<br />in three steps</h2>
+            </div>
+            <div className="rs-steps">
+              {[
+                { t: 'Add your people', d: 'Type in a few contacts or build your list over time. It stays saved for next time.' },
+                { t: 'Write your email', d: 'Add a subject and your message. Pick everyone or just a few people.' },
+                { t: 'Send & watch', d: 'Press send and see each email land in real time. That\u2019s it.' },
+              ].map((s, i) => (
+                <div key={s.t} className={`rs-step rs-reveal rs-d${i + 1}`}>
+                  <div className="rs-step-num">0{i + 1}</div>
+                  <h3>{s.t}</h3>
+                  <p>{s.d}</p>
+                  <span className="rs-step-ghost" aria-hidden="true">{i + 1}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" className="rs-section rs-section-top">
+          <div className="rs-container">
+            <div className="rs-center rs-reveal">
+              <div className="rs-eyebrow">Questions</div>
+              <h2 className="rs-h2">Good to know</h2>
+            </div>
+            <div className="rs-faq rs-reveal">
+              {FAQS.map((f, i) => (
+                <div key={f.q} className={`rs-faq-item ${openFaq === i ? 'open' : ''}`}>
+                  <button
+                    className="rs-faq-q"
+                    id={`faq-${i}`}
+                    aria-expanded={openFaq === i}
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  >
+                    {f.q} <Plus size={18} />
+                  </button>
+                  <div className="rs-faq-a"><div>{f.a}</div></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="rs-cta rs-section-top">
+          <div className="rs-cta-glow" aria-hidden="true" />
+          <div className="rs-container rs-reveal" style={{ position: 'relative' }}>
+            <h2 className="rs-display">Your next email<br /><em>deserves</em> to be seen</h2>
+            <p className="rs-lead" style={{ margin: '0 auto 2.25rem' }}>Join MailStream and send your first campaign today.</p>
+            <div className="rs-hero-actions">
+              <Link to={primaryCta.to} className="rs-btn rs-btn-glass" id="footer-cta">
+                {primaryCta.label} <ArrowRight size={16} className="rs-arrow" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="rs-footer">
+        <div className="rs-container rs-footer-inner">
+          <span className="rs-logo" style={{ fontSize: '0.95rem' }}>
+            <span className="rs-logo-mark" style={{ width: 22, height: 22, borderRadius: 6 }}><Mail size={12} color="#000" strokeWidth={2.5} /></span>
+            MailStream Pro
+          </span>
+          <div>
+            © {new Date().getFullYear()} MailStream Pro
+            <Link to="/login">Log in</Link>
+            <Link to="/register">Sign up</Link>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
