@@ -1,52 +1,167 @@
-# MailStream Pro — Full-Stack Email Campaign Platform
+# MailStream Pro
 
-> **Capstone Project**: Email Campaign App  
-> **Tech Stack**: Node.js, Express.js, MongoDB Atlas (Mongoose), React.js (Vite), Nodemailer (SMTP Engine), Lucide Icons  
-> **Branding & UI Theme**: Emerald Green SaaS Design (`#00925d`)
-
----
-
-## 1. Product Overview
-
-### What is MailStream Pro?
-MailStream Pro is an end-to-end email marketing and campaign deliverability platform. It allows businesses, founders, and marketing teams to build recipient contact lists, compose targeted group email campaigns, automatically trigger welcome emails upon signup, dispatch emails via Nodemailer (SMTP), and monitor delivery statuses (`PENDING`, `SENT`, `DELIVERED`, `FAILED`) in real time with background auto-polling.
-
-### Key Features
-1. **Automated User Onboarding**: Automatically sends a styled welcome email to newly registered users upon account creation (`Hi {Name}, welcome to MailStream Pro! 🎉`).
-2. **Contact & Audience Management**: Full CRUD operations for contact lists, with live search filtering and paginated data tables.
-3. **Campaign Creation Wizard**: Step-by-step campaign builder allowing custom subject lines, message bodies, and targeted recipient selection.
-4. **Real-Time Live Delivery Polling**: Automatic background polling streams delivery status transitions (`SENT` -> `DELIVERED` 100%) live on the campaign monitor without requiring page refreshes.
-5. **SMTP Dispatch Engine**: Powered by standard pooled Nodemailer SMTP transport with custom App Password support and connection lifecycle management.
-6. **Strict Data Privacy**: All user contacts, campaigns, and delivery logs are isolated to the authenticated account.
+> **Full-Stack Email Campaign Platform**  
+> Node.js · Express · MongoDB Atlas · React (Vite) · Brevo API · Nodemailer
 
 ---
 
-## 2. Technology Stack
+## Overview
 
-- **Frontend**: React 18, Vite, React Router DOM, Lucide React Icons, Vanilla CSS Design System (`#00925d` Emerald SaaS Theme).
-- **Backend**: Node.js, Express.js, JSON Web Tokens (JWT), BcryptJS.
-- **Database**: MongoDB Atlas Cloud, Mongoose ORM.
-- **Email Engine**: Nodemailer (Pooled SMTP connection pool with connection reuse).
+**MailStream Pro** is a production-ready email marketing and deliverability platform. It lets businesses, founders, and marketing teams build contact lists, compose targeted email campaigns, send via Brevo's API (or any SMTP provider), and monitor real-time delivery outcomes — all from a sleek dark-mode dashboard.
 
 ---
 
-## 3. Database Schema (Mongoose Models)
+## Features
 
-The application follows a normalized relational structure across MongoDB collections:
-
-- **Users**: User authentication accounts (`_id`, `name`, `email`, `passwordHash`, `createdAt`).
-- **Recipients**: Contact lists owned by users (`_id`, `userId`, `firstName`, `lastName`, `email`, `createdAt`).
-- **Campaigns**: Email content drafts & sent broadcasts (`_id`, `userId`, `name`, `subject`, `content`, `status`, `sentAt`).
-- **CampaignRecipients**: Join entity mapping target recipients to campaigns (`_id`, `campaignId`, `recipientId`, `status`, `providerMessageId`, `failureReason`, `sentAt`, `deliveredAt`, `failedAt`).
-- **EmailEvents**: Deliverability audit log (`_id`, `campaignRecipientId`, `eventType`, `providerMessageId`, `details`).
+| Feature | Description |
+|---|---|
+| 🔐 **Auth & Security** | JWT-based authentication with bcrypt password hashing |
+| 📧 **Welcome Emails** | Styled dark-brand onboarding email sent automatically on signup |
+| 🔑 **Password Reset** | 6-digit email verification code flow with 15-minute expiry |
+| 👥 **Recipients Management** | Full CRUD with live search and pagination |
+| 📨 **Campaign Builder** | 3-step wizard: Content → Audience → Review & Launch |
+| 🚀 **Email Dispatch** | Brevo HTTP API (primary) with Nodemailer SMTP fallback |
+| 📊 **Live Delivery Polling** | Auto-refreshes `PENDING → SENT → DELIVERED` statuses every 2.5s |
+| 📈 **Analytics Dashboard** | Campaign totals, delivery rates, and recent campaign table |
+| 🌑 **Dark UI** | Resend-inspired dark theme with emerald green accents |
 
 ---
 
-## 4. Standardized API Response Structure
+## Tech Stack
 
-All backend endpoints return a consistent JSON response signature:
+### Frontend
+- **React 18** + **Vite** — fast dev server and HMR
+- **React Router v7** — client-side routing with protected routes
+- **Lucide React** — icon library
+- **Vanilla CSS** — custom dark design system (CSS variables, glass cards, animations)
+- **Fonts**: Inter (sans), Instrument Serif (display), JetBrains Mono (mono)
 
-### Success Response (`HTTP 200 / 201`)
+### Backend
+- **Node.js** + **Express.js** — REST API server
+- **MongoDB Atlas** + **Mongoose** — cloud database with ODM
+- **JSON Web Tokens (JWT)** — stateless authentication
+- **BcryptJS** — password hashing
+- **Brevo HTTP API** — primary transactional email delivery
+- **Nodemailer** — SMTP fallback email transport
+
+---
+
+## Database Schema
+
+```
+Users
+  _id, name, email, passwordHash, createdAt
+
+Recipients
+  _id, userId (ref), firstName, lastName, email, createdAt
+
+Campaigns
+  _id, userId (ref), name, subject, content, status, sentAt, createdAt
+
+CampaignRecipients
+  _id, campaignId (ref), recipientId (ref), status,
+  providerMessageId, failureReason, sentAt, deliveredAt, failedAt
+
+EmailEvents
+  _id, campaignRecipientId (ref), eventType, providerMessageId, details
+```
+
+**Campaign Status Flow**: `DRAFT` → `SENDING` → `SENT` → `DELIVERED` / `FAILED`
+
+---
+
+## API Reference
+
+### Auth — `/api/auth`
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/register` | Public | Create account + send welcome email |
+| `POST` | `/api/auth/login` | Public | Login and receive JWT |
+| `GET` | `/api/auth/me` | Bearer JWT | Get current user profile |
+| `POST` | `/api/auth/forgot-password` | Public | Send 6-digit reset code by email |
+| `POST` | `/api/auth/reset-password` | Public | Verify code and set new password |
+
+**Register**
+```json
+POST /api/auth/register
+{
+  "name": "Ramadan Adewale",
+  "email": "ramadanadex111@gmail.com",
+  "password": "Password123!"
+}
+```
+
+**Forgot Password**
+```json
+POST /api/auth/forgot-password
+{ "email": "ramadanadex111@gmail.com" }
+```
+
+**Reset Password**
+```json
+POST /api/auth/reset-password
+{
+  "email": "ramadanadex111@gmail.com",
+  "code": "482910",
+  "newPassword": "NewPassword123!"
+}
+```
+
+---
+
+### Recipients — `/api/recipients`
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/recipients?page=1&limit=10&search=john` | List with search & pagination |
+| `POST` | `/api/recipients` | Create recipient |
+| `PATCH` | `/api/recipients/:id` | Update recipient |
+| `DELETE` | `/api/recipients/:id` | Delete recipient |
+
+**Create Recipient**
+```json
+POST /api/recipients
+{
+  "firstName": "Ramadan",
+  "lastName": "Adewale",
+  "email": "ramadanadex111@gmail.com"
+}
+```
+
+---
+
+### Campaigns — `/api/campaigns`
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/campaigns?page=1&limit=10&search=welcome` | List campaigns |
+| `POST` | `/api/campaigns` | Create draft campaign |
+| `GET` | `/api/campaigns/:id` | Get campaign with stats |
+| `PATCH` | `/api/campaigns/:id` | Update draft campaign |
+| `DELETE` | `/api/campaigns/:id` | Delete campaign |
+| `POST` | `/api/campaigns/:id/send` | Dispatch campaign to recipients |
+| `GET` | `/api/campaigns/:id/recipients` | List delivery records |
+| `GET` | `/api/campaigns/dashboard/summary` | Analytics dashboard data |
+
+**Create & Send Campaign**
+```json
+POST /api/campaigns
+{
+  "name": "October Newsletter",
+  "subject": "Big updates this month!",
+  "content": "Hi {firstName}, here's what's new...",
+  "recipientIds": ["6ac3c228827d8c5e828414b0", "6ac3c228827d8c5e828414b1"]
+}
+
+POST /api/campaigns/:id/send
+```
+
+---
+
+## Standard API Response Format
+
+**Success**
 ```json
 {
   "success": true,
@@ -54,122 +169,26 @@ All backend endpoints return a consistent JSON response signature:
   "data": {
     "campaignId": "6ac42c081572318a5ca35a10",
     "status": "SENT",
-    "totalSent": 2,
+    "totalSent": 5,
     "totalFailed": 0
   }
 }
 ```
 
-### Error Response (`HTTP 400 / 401 / 404 / 500`)
+**Error**
 ```json
 {
   "success": false,
-  "message": "Please select at least one recipient for this campaign.",
+  "message": "Please select at least one recipient.",
   "data": null
 }
 ```
 
 ---
 
-## 5. Comprehensive API Endpoints Documentation
+## Environment Variables
 
-### Authentication Routes (`/api/auth`)
-
-#### 1. Register User & Trigger Welcome Email
-- **Method**: `POST`
-- **Endpoint**: `/api/auth/register`
-- **Auth**: Public
-- **Request Body**:
-  ```json
-  {
-    "name": "Ramadan Adewale",
-    "email": "ramadanadex111@gmail.com",
-    "password": "Password123!"
-  }
-  ```
-- **Behavior**: Creates account, returns JWT token, and asynchronously dispatches onboarding welcome email to recipient.
-
-#### 2. Login User
-- **Method**: `POST`
-- **Endpoint**: `/api/auth/login`
-- **Auth**: Public
-- **Request Body**:
-  ```json
-  {
-    "email": "ramadanadex111@gmail.com",
-    "password": "Password123!"
-  }
-  ```
-
-#### 3. Get Current Profile
-- **Method**: `GET`
-- **Endpoint**: `/api/auth/me`
-- **Auth**: `Bearer <JWT_TOKEN>`
-
----
-
-### Recipient Management Routes (`/api/recipients`)
-
-#### 1. List Recipients (With Search & Pagination)
-- **Method**: `GET`
-- **Endpoint**: `/api/recipients?page=1&limit=10&search=ramadan`
-- **Auth**: `Bearer <JWT_TOKEN>`
-
-#### 2. Create Recipient
-- **Method**: `POST`
-- **Endpoint**: `/api/recipients`
-- **Auth**: `Bearer <JWT_TOKEN>`
-- **Request Body**:
-  ```json
-  {
-    "firstName": "Ramadan",
-    "lastName": "Adewale",
-    "email": "ramadanadex111@gmail.com"
-  }
-  ```
-
-#### 3. Update / Delete Recipient
-- **Method**: `PATCH` / `DELETE`
-- **Endpoint**: `/api/recipients/:id`
-- **Auth**: `Bearer <JWT_TOKEN>`
-
----
-
-### Campaign Management Routes (`/api/campaigns`)
-
-#### 1. List Campaigns
-- **Method**: `GET`
-- **Endpoint**: `/api/campaigns?page=1&limit=10&search=Welcome`
-- **Auth**: `Bearer <JWT_TOKEN>`
-
-#### 2. Create Draft Campaign
-- **Method**: `POST`
-- **Endpoint**: `/api/campaigns`
-- **Auth**: `Bearer <JWT_TOKEN>`
-- **Request Body**:
-  ```json
-  {
-    "name": "Welcome & Onboarding Campaign",
-    "subject": "Hi there, welcome to MailStream Pro!",
-    "content": "Thank you for joining MailStream Pro...",
-    "recipientIds": ["6ac3c228827d8c5e828414b0"]
-  }
-  ```
-
-#### 3. Dispatch Email Campaign
-- **Method**: `POST`
-- **Endpoint**: `/api/campaigns/:id/send`
-- **Auth**: `Bearer <JWT_TOKEN>`
-- **Description**: Triggers pooled Nodemailer SMTP dispatch to all targeted recipients.
-
-#### 4. Get Dashboard Analytics Summary
-- **Method**: `GET`
-- **Endpoint**: `/api/campaigns/dashboard/summary`
-- **Auth**: `Bearer <JWT_TOKEN>`
-
----
-
-## 6. Environment Configuration (`backend/.env`)
+Create a `backend/.env` file:
 
 ```env
 PORT=5001
@@ -177,36 +196,84 @@ MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRES_IN=7d
 
-# Email Provider Configuration
-EMAIL_PROVIDER=smtp
+# ─── Email Provider ────────────────────────────────────────
+# Option A: Brevo HTTP API (recommended — free tier: 300 emails/day)
+BREVO_API_KEY=xkeysib-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-# SMTP Transport Credentials (e.g. Gmail App Password)
+# Option B: SMTP Fallback (Gmail, Mailgun, etc.)
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your_email@gmail.com
 SMTP_PASS=your_app_password
 
-# Default Sender Identity
+# Sender Identity
 FROM_EMAIL=your_email@gmail.com
 FROM_NAME=MailStream Pro
 ```
 
+> **Note:** If `BREVO_API_KEY` starts with `xkeysib-`, the app uses Brevo's HTTP API automatically. Otherwise it falls back to SMTP via Nodemailer.
+
 ---
 
-## 7. How to Run Locally
+## Running Locally
 
-### 1. Start Backend Server
+### Backend
 ```bash
 cd backend
 npm install
 npm run dev
-# Server running at http://localhost:5001
+# → http://localhost:5001
 ```
 
-### 2. Start Frontend Web App
+### Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
-# App running at http://localhost:5173
+# → http://localhost:5173
 ```
+
+---
+
+## Deployment
+
+The app is structured for easy deployment on any Node.js-compatible platform:
+
+- **Backend**: Render, Railway, Fly.io, or any Node host
+- **Frontend**: Vercel, Netlify, or served as static build
+- **Database**: MongoDB Atlas (free M0 cluster)
+- **Email**: Brevo free tier (300 emails/day, no credit card required)
+
+### Production Environment Variables (Backend)
+Set all variables from the `.env` section above in your hosting platform's environment settings. The `BREVO_API_KEY` is the only email variable required for production — no SMTP setup needed.
+
+---
+
+## Project Structure
+
+```
+email-campaign-app/
+├── backend/
+│   ├── src/
+│   │   ├── config/          # DB connection
+│   │   ├── controllers/     # Route handlers
+│   │   ├── middleware/      # Auth middleware
+│   │   ├── models/          # Mongoose schemas
+│   │   ├── routes/          # Express routers
+│   │   ├── services/        # emailService (Brevo + Nodemailer)
+│   │   └── app.js
+│   └── .env
+│
+└── frontend/
+    ├── src/
+    │   ├── components/      # Navbar, Sidebar, Modal, Badge, Pagination
+    │   ├── context/         # AuthContext (JWT + user state)
+    │   ├── pages/           # LandingPage, Dashboard, Campaigns, Recipients, Login, Register
+    │   ├── services/        # api.js (fetch wrapper)
+    │   └── index.css        # Dark design system (CSS variables)
+    └── index.html
+```
+
+---
+
+*Built with ❤️ — MailStream Pro*
